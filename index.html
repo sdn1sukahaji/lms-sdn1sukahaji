@@ -283,7 +283,6 @@ tr:hover { background: #f8fafc; }
       </div>
     </div>
     <div class="user-area">
-      <a href="https://sdn1sukahaji.github.io/sistem-informasi-digital-sdn1sukahaji/dashboard.html" class="btn-card btn-soft" style="padding: 8px 14px; font-size: 13px; border-radius: 10px;">🏠 Ruang Kerja SIMS</a>
       <div class="role-pill" id="userBadge">👤 Memuat...</div>
       <button class="btn-logout" onclick="logoutLMS()">Keluar 🚪</button>
     </div>
@@ -443,16 +442,33 @@ function initSubjectMenus() {
   });
 }
 
-const SIMS_AUTH_API = 'https://script.google.com/macros/s/AKfycbyfseRl94qmA0TaX1ODw3sr8Car6i0uf-3WEBKcJ8cDILdi459vW0CCqo28L3iGgHhVww/exec';
-
 async function checkSSOAndSession() {
   const params = new URLSearchParams(window.location.search);
-  const ssoUserParam = params.get('sso_user');
-  const ssoTokenParam = params.get('sso_token') || localStorage.getItem('sdn1_sso_token') || '';
+  const ssoUser = params.get('sso_user'); // Parameter SSO dari Web Sistem Informasi Utama
 
-  // 1. Cek jika sudah punya sesi LMS aktif yang sah
+  // A. Jika ada lemparan SSO dari Web Utama Sekolah
+  if (ssoUser) {
+    showLoginAlert("⏳ Menghubungkan Single Sign-On (SSO) dari Sistem Informasi Sekolah...", "info");
+    try {
+      let res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'verifySSO', ssoUsername: ssoUser })
+      });
+      let result = await res.json();
+      if (result.status === 'success') {
+        saveSession(result.user, result.token);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return enterPortal();
+      }
+    } catch (e) {}
+  }
+
+  // B. Cek Sesi Tersimpan atau Shared LocalStorage SSO (`sdn1_sso_user`)
   let saved = localStorage.getItem(SESSION_KEY);
-  if (saved && !ssoUserParam) {
+  let sharedSSO = localStorage.getItem('sdn1_sso_user');
+
+  if (saved) {
     try {
       let parsed = JSON.parse(saved);
       if (parsed.token && parsed.user) {
@@ -461,43 +477,22 @@ async function checkSSOAndSession() {
         return enterPortal();
       }
     } catch (e) {}
-  }
-
-  // 2. Cek Sesi Terpadu dari Sistem Informasi Digital (URL / Shared LocalStorage)
-  const targetSsoUser = ssoUserParam || localStorage.getItem('sdn1_sso_user');
-  const simsUserSessionRaw = localStorage.getItem('userSession');
-
-  if (targetSsoUser) {
-    showLoginAlert("⏳ Memverifikasi Keamanan Single Sign-On (SSO) SDN 1 Sukahaji...", "info");
+  } else if (sharedSSO) {
     try {
-      // Verifikasi keabsahan Token SSO terlebih dahulu jika tersedia
-      if (ssoTokenParam) {
-        let verifyRes = await fetch(`${SIMS_AUTH_API}?action=verify_sso&username=${encodeURIComponent(targetSsoUser)}&sso_token=${encodeURIComponent(ssoTokenParam)}&_t=${Date.now()}`);
-        let verifyJson = await verifyRes.json();
-        if (verifyJson.status !== 'success') {
-          showLoginAlert("⚠️ Sesi SSO telah berakhir. Silakan login kembali.", "error");
-          return;
-        }
-      } else if (!simsUserSessionRaw) {
-        // Tolak jika tidak ada token maupun sesi aktif di browser
-        return;
-      }
-
-      // Hubungkan ke backend LMS untuk mendapatkan token akses data LKPD
       let res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'verifySSO', ssoUsername: targetSsoUser, ssoToken: ssoTokenParam })
+        body: JSON.stringify({ action: 'verifySSO', ssoUsername: sharedSSO })
       });
       let result = await res.json();
       if (result.status === 'success') {
         saveSession(result.user, result.token);
-        if (ssoUserParam) window.history.replaceState({}, document.title, window.location.pathname);
         return enterPortal();
       }
     } catch (e) {}
   }
 }
+
 // ================= 2. PROSES LOGIN DENGAN PROTEKSI BRUTE-FORCE =================
 async function handleLogin(e) {
   e.preventDefault();
@@ -548,16 +543,10 @@ function saveSession(user, token) {
   currentUser = user;
   authToken = token;
   localStorage.setItem(SESSION_KEY, JSON.stringify({ user, token }));
-  if (user && user.username) {
-    localStorage.setItem('sdn1_sso_user', user.username);
-  }
 }
 
 function logoutLMS() {
   localStorage.removeItem(SESSION_KEY);
-  localStorage.removeItem('sdn1_sso_user');
-  localStorage.removeItem('sdn1_sso_token');
-  localStorage.removeItem('userSession');
   currentUser = null;
   authToken = null;
   document.getElementById("portalView").style.display = "none";
