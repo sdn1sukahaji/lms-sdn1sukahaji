@@ -283,6 +283,7 @@ tr:hover { background: #f8fafc; }
       </div>
     </div>
     <div class="user-area">
+      <a href="https://sdn1sukahaji.github.io/sistem-informasi-digital-sdn1sukahaji/dashboard.html" class="btn-card btn-soft" style="padding: 8px 14px; font-size: 13px; border-radius: 10px; text-decoration: none;">🏠 Ruang Kerja SIMS</a>
       <div class="role-pill" id="userBadge">👤 Memuat...</div>
       <button class="btn-logout" onclick="logoutLMS()">Keluar 🚪</button>
     </div>
@@ -396,6 +397,7 @@ tr:hover { background: #f8fafc; }
 // KONFIGURASI UTAMA PORTAL LMS V4.0 - SDN 1 SUKAHAJI
 // =========================================================================
 const ENDPOINT = 'https://script.google.com/macros/s/AKfycby5rj16xD-15Q1s0UxtK-h8AZEwbvAt5bsdGtsBuhkP-urB5SJzKlk8usPaNkdwcoqS/exec';
+const SIMS_AUTH_API = 'https://script.google.com/macros/s/AKfycbyfseRl94qmA0TaX1ODw3sr8Car6i0uf-3WEBKcJ8cDILdi459vW0CCqo28L3iGgHhVww/exec';
 const SESSION_KEY = 'sdn1_sukahaji_lms_session';
 const LOCKOUT_KEY = 'sdn1_sukahaji_login_lock';
 
@@ -418,14 +420,13 @@ let katalogLKPD = [];
 let rawSubmissions = [];
 let groupedSubmissions = [];
 
-// ================= 1. INISIALISASI & DETEKSI SSO =================
+// ================= 1. INISIALISASI & DETEKSI SSO AMAN =================
 document.addEventListener("DOMContentLoaded", () => {
   initSubjectMenus();
   checkSSOAndSession();
 });
 
 function initSubjectMenus() {
-  // Render Pill Bar
   const pillBox = document.getElementById("subjectPills");
   pillBox.innerHTML = SUBJECTS.map(s => `
     <button class="sub-pill ${s.id === 'ALL' ? 'active' : ''}" onclick="selectSubject('${s.id}', this)">
@@ -433,7 +434,6 @@ function initSubjectMenus() {
     </button>
   `).join('');
 
-  // Render Dropdown Modal & Tabel
   const pubSel = document.getElementById("pubSubject");
   const tabSel = document.getElementById("tableSubFilter");
   SUBJECTS.filter(s => s.id !== 'ALL').forEach(s => {
@@ -444,31 +444,12 @@ function initSubjectMenus() {
 
 async function checkSSOAndSession() {
   const params = new URLSearchParams(window.location.search);
-  const ssoUser = params.get('sso_user'); // Parameter SSO dari Web Sistem Informasi Utama
+  const ssoUserParam = params.get('sso_user');
+  const ssoTokenParam = params.get('sso_token') || localStorage.getItem('sdn1_sso_token') || '';
 
-  // A. Jika ada lemparan SSO dari Web Utama Sekolah
-  if (ssoUser) {
-    showLoginAlert("⏳ Menghubungkan Single Sign-On (SSO) dari Sistem Informasi Sekolah...", "info");
-    try {
-      let res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'verifySSO', ssoUsername: ssoUser })
-      });
-      let result = await res.json();
-      if (result.status === 'success') {
-        saveSession(result.user, result.token);
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return enterPortal();
-      }
-    } catch (e) {}
-  }
-
-  // B. Cek Sesi Tersimpan atau Shared LocalStorage SSO (`sdn1_sso_user`)
+  // A. Cek Sesi Tersimpan LMS Aktif
   let saved = localStorage.getItem(SESSION_KEY);
-  let sharedSSO = localStorage.getItem('sdn1_sso_user');
-
-  if (saved) {
+  if (saved && !ssoUserParam) {
     try {
       let parsed = JSON.parse(saved);
       if (parsed.token && parsed.user) {
@@ -477,23 +458,42 @@ async function checkSSOAndSession() {
         return enterPortal();
       }
     } catch (e) {}
-  } else if (sharedSSO) {
+  }
+
+  // B. Cek Sesi Terpadu dari Sistem Informasi Digital (URL / Shared LocalStorage)
+  const targetSsoUser = ssoUserParam || localStorage.getItem('sdn1_sso_user');
+  const simsUserSessionRaw = localStorage.getItem('userSession');
+
+  if (targetSsoUser) {
+    showLoginAlert("⏳ Memverifikasi Keamanan Single Sign-On (SSO) SDN 1 Sukahaji...", "info");
     try {
+      if (ssoTokenParam) {
+        let verifyRes = await fetch(`${SIMS_AUTH_API}?action=verify_sso&username=${encodeURIComponent(targetSsoUser)}&sso_token=${encodeURIComponent(ssoTokenParam)}&_t=${Date.now()}`);
+        let verifyJson = await verifyRes.json();
+        if (verifyJson.status !== 'success') {
+          showLoginAlert("⚠️ Sesi SSO telah berakhir. Silakan login kembali.", "error");
+          return;
+        }
+      } else if (!simsUserSessionRaw) {
+        return;
+      }
+
       let res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'verifySSO', ssoUsername: sharedSSO })
+        body: JSON.stringify({ action: 'verifySSO', ssoUsername: targetSsoUser, ssoToken: ssoTokenParam })
       });
       let result = await res.json();
       if (result.status === 'success') {
         saveSession(result.user, result.token);
+        if (ssoUserParam) window.history.replaceState({}, document.title, window.location.pathname);
         return enterPortal();
       }
     } catch (e) {}
   }
 }
 
-// ================= 2. PROSES LOGIN DENGAN PROTEKSI BRUTE-FORCE =================
+// ================= 2. PROSES LOGIN LOKAL DENGAN PROTEKSI BRUTE-FORCE =================
 async function handleLogin(e) {
   e.preventDefault();
   let lockData = JSON.parse(localStorage.getItem(LOCKOUT_KEY) || '{"count":0,"until":0}');
@@ -525,7 +525,7 @@ async function handleLogin(e) {
     } else {
       lockData.count += 1;
       if (lockData.count >= 5) {
-        lockData.until = Date.now() + 60000; // Kunci 60 detik jika 5x salah
+        lockData.until = Date.now() + 60000;
         lockData.count = 0;
       }
       localStorage.setItem(LOCKOUT_KEY, JSON.stringify(lockData));
@@ -543,10 +543,16 @@ function saveSession(user, token) {
   currentUser = user;
   authToken = token;
   localStorage.setItem(SESSION_KEY, JSON.stringify({ user, token }));
+  if (user && user.username) {
+    localStorage.setItem('sdn1_sso_user', user.username);
+  }
 }
 
 function logoutLMS() {
   localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem('sdn1_sso_user');
+  localStorage.removeItem('sdn1_sso_token');
+  localStorage.removeItem('userSession');
   currentUser = null;
   authToken = null;
   document.getElementById("portalView").style.display = "none";
@@ -576,7 +582,6 @@ async function enterPortal() {
   badge.className = `role-pill ${roleClass}`;
   badge.innerHTML = `👤 ${currentUser.nama} • <b>${currentUser.role}</b>`;
 
-  // Sesuaikan Banner & Menu berdasarkan Role
   let title = document.getElementById("welcomeTitle");
   let desc = document.getElementById("welcomeDesc");
   let topActions = document.getElementById("teacherTopActions");
@@ -598,7 +603,6 @@ async function enterPortal() {
     kepsekBox.style.display = "block";
     document.getElementById("catalogHeading").innerText = "🗂️ Katalog LKPD Terpublikasi";
   } else {
-    // Guru / Admin
     title.innerText = `Portal Guru — ${currentUser.nama}`;
     desc.innerText = `Kelola pengiriman tautan LKPD untuk 7 mata pelajaran dan berikan penilaian kelompok terpadu.`;
     topActions.style.display = "flex";
@@ -739,7 +743,6 @@ function renderSubjectCards() {
   grid.innerHTML = filtered.map(item => {
     let subMeta = SUBJECTS.find(s => s.id.toLowerCase() === item.subject.toLowerCase()) || SUBJECTS[0];
 
-    // Tampilan Kartu untuk SISWA
     if (currentUser.role === 'Siswa') {
       let mySub = rawSubmissions.find(s => s.lkpdId === item.lkpdId && String(s.nisn) === String(currentUser.username));
       let statusHTML = '';
@@ -750,14 +753,10 @@ function renderSubjectCards() {
         actionHTML = `<a href="${item.url}" target="_blank" class="btn-card btn-primary">🚀 Kerjakan Misi</a>`;
       } else if (mySub.status === 'Sudah Dinilai') {
         statusHTML = `<span class="badge-status st-done">⭐ Nilai: ${mySub.grade}</span>`;
-        actionHTML = `
-          <a href="${item.url}?view=siswa&submissionId=${mySub.submissionId}" target="_blank" class="btn-card btn-emerald">🔍 Lihat Nilai & Catatan</a>
-        `;
+        actionHTML = `<a href="${item.url}?view=siswa&submissionId=${mySub.submissionId}" target="_blank" class="btn-card btn-emerald">🔍 Lihat Nilai & Catatan</a>`;
       } else {
         statusHTML = `<span class="badge-status st-pending">⏳ Menunggu Dinilai Guru</span>`;
-        actionHTML = `
-          <a href="${item.url}?view=siswa&submissionId=${mySub.submissionId}" target="_blank" class="btn-card btn-soft">📄 Lihat Jawabanmu</a>
-        `;
+        actionHTML = `<a href="${item.url}?view=siswa&submissionId=${mySub.submissionId}" target="_blank" class="btn-card btn-soft">📄 Lihat Jawabanmu</a>`;
       }
 
       return `
@@ -772,8 +771,8 @@ function renderSubjectCards() {
           </div>
           <div>
             <div class="card-meta">
-              <span>👨‍🏫 ${item.teacher || 'Guru Kelas IV'}</span>
-              <span>📌 ${item.kelas || 'Kelas 4'}</span>
+              <span>👨‍🏫 ${item.teacher || 'Guru Kelas'}</span>
+              <span>📌 ${item.kelas || 'Kelas'}</span>
             </div>
             <div class="card-actions">${actionHTML}</div>
           </div>
@@ -781,7 +780,6 @@ function renderSubjectCards() {
       `;
     }
 
-    // Tampilan Kartu untuk GURU & KEPALA SEKOLAH
     let countGroup = groupedSubmissions.filter(g => g.lkpdId === item.lkpdId).length;
     return `
       <div class="lkpd-card">
@@ -808,7 +806,7 @@ function renderSubjectCards() {
   }).join('');
 }
 
-// ================= 6. TABEL MONITORING PENGUMPULAN (GURU & KEPSEK) =================
+// ================= 6. TABEL MONITORING PENGUMPULAN =================
 function filterTableByLKPD(subjectName) {
   document.getElementById("tableSubFilter").value = subjectName;
   renderSubmissionsTable();
@@ -838,10 +836,7 @@ function renderSubmissionsTable() {
       ? `<span class="badge-status st-done">✅ Sudah Dinilai (${item.grade})</span>`
       : `<span class="badge-status st-pending">⏳ Menunggu Dinilai</span>`;
 
-    let btnLabel = currentUser.role === 'Kepala Sekolah'
-      ? '🔍 Supervisi'
-      : (item.status === 'Sudah Dinilai' ? '🔍 Lihat Arsip' : '📝 Beri Nilai');
-
+    let btnLabel = currentUser.role === 'Kepala Sekolah' ? '🔍 Supervisi' : (item.status === 'Sudah Dinilai' ? '🔍 Lihat Arsip' : '📝 Beri Nilai');
     let viewRole = currentUser.role === 'Kepala Sekolah' ? 'siswa' : 'guru';
 
     return `
@@ -864,7 +859,7 @@ function renderSubmissionsTable() {
 function openSubmissionReview(lkpdId, subId, viewRole) {
   let found = katalogLKPD.find(k => k.lkpdId === lkpdId);
   if (!found || !found.url) {
-    return alert(`Tautan URL untuk LKPD "${lkpdId}" belum terdaftar di Katalog. Silakan daftarkan melalui tombol "+ Kirim / Input Link LKPD".`);
+    return alert(`Tautan URL untuk LKPD "${lkpdId}" belum terdaftar di Katalog.`);
   }
   window.open(`${found.url}?view=${viewRole}&submissionId=${subId}`, "_blank");
 }
@@ -890,7 +885,7 @@ function renderKepsekAnalytics() {
   }).join('');
 }
 
-// ================= 8. MODAL INPUT / KIRIM LINK LKPD BARU =================
+// ================= 8. MODAL PUBLISH LKPD (GURU) =================
 function openPublishModal() {
   document.getElementById("publishModal").style.display = "grid";
 }
