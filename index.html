@@ -1,236 +1,471 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Portal Belajar Digital (LMS) - SD Negeri 1 Sukahaji</title>
+<title>LMS V5.0 — Portal Pembelajaran & Analitik Digital SDN 1 Sukahaji</title>
 <style>
+/* =========================================================================
+   1. DESIGN TOKENS (LIGHT & DARK MODE)
+   ========================================================================= */
 :root {
-  --bg: #f4f8fb;
+  --bg: #f1f5f9;
   --surface: #ffffff;
-  --ink: #1e293b;
+  --surface-2: #f8fafc;
+  --ink: #0f172a;
+  --slate: #334155;
   --muted: #64748b;
   --line: #e2e8f0;
   --primary: #0284c7;
   --primary-dark: #0369a1;
   --primary-soft: #e0f2fe;
-  --emerald: #0d9488;
-  --emerald-soft: #ccfbf1;
-  --amber: #f59e0b;
+  --emerald: #059669;
+  --emerald-dark: #047857;
+  --emerald-soft: #d1fae5;
+  --amber: #d97706;
   --amber-soft: #fef3c7;
   --rose: #e11d48;
   --rose-soft: #ffe4e6;
   --purple: #7c3aed;
   --purple-soft: #ede9fe;
-  --radius: 20px;
-  --shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06);
+  --sidebar-w: 268px;
+  --topbar-h: 66px;
+  --radius: 18px;
+  --shadow: 0 8px 28px -6px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 20px 50px -12px rgba(15, 23, 42, 0.16);
 }
+
+[data-theme="dark"] {
+  --bg: #0b1120;
+  --surface: #111827;
+  --surface-2: #1e293b;
+  --ink: #f8fafc;
+  --slate: #cbd5e1;
+  --muted: #94a3b8;
+  --line: #1f2937;
+  --primary: #38bdf8;
+  --primary-dark: #0284c7;
+  --primary-soft: rgba(56, 189, 248, 0.16);
+  --emerald: #34d399;
+  --emerald-dark: #059669;
+  --emerald-soft: rgba(52, 211, 153, 0.16);
+  --amber: #fbbf24;
+  --amber-soft: rgba(251, 191, 36, 0.16);
+  --rose: #fb7185;
+  --rose-soft: rgba(251, 113, 133, 0.16);
+  --purple: #a78bfa;
+  --purple-soft: rgba(167, 139, 250, 0.16);
+  --shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 60px -12px rgba(0, 0, 0, 0.65);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-body { background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); min-height: 100vh; overflow-x: hidden; transition: background .2s, color .2s; }
+a { color: inherit; }
 
-/* DEKORASI LATAR RAMAH ANAK */
-body::before, body::after {
-  content: ""; position: fixed; z-index: -1; border-radius: 50%; filter: blur(45px); opacity: 0.45; pointer-events: none;
-}
-body::before { width: 320px; height: 320px; background: #bae6fd; top: -80px; left: -80px; }
-body::after { width: 280px; height: 280px; background: #fbcfe8; bottom: -60px; right: -60px; }
-
-/* ================= HALAMAN LOGIN ================= */
+/* =========================================================================
+   2. LOGIN & SSO SCREEN
+   ========================================================================= */
 .login-wrapper {
   min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+  background: radial-gradient(circle at 12% 15%, rgba(2,132,199,0.16), transparent 42%),
+              radial-gradient(circle at 88% 85%, rgba(5,150,105,0.16), transparent 42%),
+              var(--bg);
 }
 .login-card {
-  width: min(460px, 100%); background: var(--surface); border-radius: 28px;
-  box-shadow: 0 20px 50px rgba(2, 132, 199, 0.12); padding: 36px 32px; border: 1px solid #e0f2fe;
-  position: relative; overflow: hidden;
+  width: min(460px, 100%); background: var(--surface); border-radius: 26px;
+  box-shadow: var(--shadow-lg); padding: 36px 32px; border: 1px solid var(--line);
 }
-.login-header { text-align: center; margin-bottom: 26px; }
+.login-header { text-align: center; margin-bottom: 24px; }
 .school-crest {
-  width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, #0284c7, #0d9488);
-  color: #fff; font-size: 36px; display: inline-grid; place-items: center; margin-bottom: 14px;
-  box-shadow: 0 10px 20px rgba(2, 132, 199, 0.25);
+  width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, #0284c7, #059669);
+  color: #fff; font-size: 34px; display: inline-grid; place-items: center; margin-bottom: 14px;
+  box-shadow: 0 12px 24px rgba(2, 132, 199, 0.28);
 }
-.login-header h1 { font-size: 22px; font-weight: 900; color: var(--ink); }
-.login-header p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.login-header h1 { font-size: 22px; font-weight: 900; }
+.login-header p { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
 .sec-badge {
-  display: inline-flex; align-items: center; gap: 6px; background: #f0fdf4; color: #15803d;
-  border: 1px solid #bbf7d0; font-size: 12px; font-weight: 800; padding: 5px 12px; border-radius: 99px; margin-top: 10px;
+  display: inline-flex; align-items: center; gap: 6px; background: var(--emerald-soft); color: var(--emerald-dark);
+  font-size: 12px; font-weight: 800; padding: 5px 12px; border-radius: 99px; margin-top: 10px;
 }
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; font-size: 13px; font-weight: 800; color: #334155; margin-bottom: 7px; }
+[data-theme="dark"] .sec-badge { color: var(--emerald); }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12.5px; font-weight: 800; color: var(--slate); margin-bottom: 6px; }
 .input-box { position: relative; display: flex; align-items: center; }
-.input-box input, .form-control {
-  width: 100%; padding: 13px 16px; border: 2px solid var(--line); border-radius: 14px;
-  font-size: 15px; font-weight: 600; color: var(--ink); background: #f8fafc; outline: none; transition: .2s;
+.form-control, .input-box input {
+  width: 100%; padding: 11px 14px; border: 2px solid var(--line); border-radius: 12px;
+  font-size: 14px; font-weight: 600; color: var(--ink); background: var(--surface-2); outline: none; transition: .2s;
 }
-.input-box input:focus, .form-control:focus {
-  background: #fff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
+.form-control:focus, .input-box input:focus {
+  background: var(--surface); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.14);
 }
-.toggle-pass {
-  position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--muted);
-}
+.toggle-pass { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 17px; color: var(--muted); }
 .btn-login {
-  width: 100%; padding: 14px; border: none; border-radius: 14px;
-  background: linear-gradient(135deg, #0284c7, #0d9488); color: #fff;
-  font-size: 16px; font-weight: 900; cursor: pointer; transition: .2s;
-  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25);
+  width: 100%; padding: 13px; border: none; border-radius: 13px;
+  background: linear-gradient(135deg, #0284c7, #059669); color: #fff;
+  font-size: 15px; font-weight: 900; cursor: pointer; transition: .2s;
+  box-shadow: 0 10px 22px rgba(2, 132, 199, 0.25);
 }
-.btn-login:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(2, 132, 199, 0.32); }
-.btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-.login-alert {
-  display: none; padding: 12px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; margin-bottom: 16px;
-}
-.login-alert.error { display: block; background: var(--rose-soft); color: var(--rose); border: 1px solid #fecdd3; }
+.btn-login:hover { transform: translateY(-2px); }
+.btn-login:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.login-alert { display: none; padding: 11px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; margin-bottom: 16px; }
+.login-alert.error { display: block; background: var(--rose-soft); color: var(--rose); }
 .login-alert.info { display: block; background: var(--primary-soft); color: var(--primary-dark); }
+[data-theme="dark"] .login-alert.info { color: var(--primary); }
 
-/* ================= TOPBAR PORTAL ================= */
-.portal-app { display: none; flex: 1; flex-direction: column; }
-.topbar {
-  position: sticky; top: 0; z-index: 30; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 14px;
+/* =========================================================================
+   3. 3-ZONE MODERN LAYOUT (SIDEBAR + TOPBAR + MAIN CANVAS)
+   ========================================================================= */
+.app-shell { display: none; min-height: 100vh; }
+.app-shell.active { display: flex; }
+
+.sidebar {
+  width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--line);
+  position: fixed; top: 0; bottom: 0; left: 0; z-index: 60;
+  display: flex; flex-direction: column; transition: transform .25s ease, width .25s ease;
 }
-.brand-area { display: flex; align-items: center; gap: 12px; }
+.sidebar.collapsed { width: 78px; }
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .brand-meta,
+.sidebar.collapsed .nav-section-title,
+.sidebar.collapsed .sidebar-foot-text { display: none; }
+.sidebar.collapsed .nav-btn { justify-content: center; padding: 12px; }
+
+.sidebar-brand {
+  height: var(--topbar-h); padding: 0 18px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--line); flex-shrink: 0;
+}
 .brand-logo {
-  width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #0d9488);
-  color: #fff; display: grid; place-items: center; font-size: 22px; font-weight: 900;
+  width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #059669);
+  color: #fff; display: grid; place-items: center; font-size: 20px; flex-shrink: 0;
 }
-.brand-text h2 { font-size: 17px; font-weight: 900; color: var(--ink); line-height: 1.2; }
-.brand-text span { font-size: 12px; color: var(--muted); font-weight: 700; }
+.brand-meta h2 { font-size: 15px; font-weight: 900; line-height: 1.2; }
+.brand-meta span { font-size: 11.5px; color: var(--muted); font-weight: 700; }
 
-.user-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 4px; }
+.nav-section-title {
+  font-size: 10.5px; font-weight: 900; text-transform: uppercase; letter-spacing: .7px;
+  color: var(--muted); padding: 12px 12px 6px;
+}
+.nav-btn {
+  display: flex; align-items: center; gap: 12px; width: 100%; border: none; background: transparent;
+  color: var(--slate); padding: 11px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 800;
+  cursor: pointer; text-align: left; transition: .18s;
+}
+.nav-btn:hover { background: var(--surface-2); color: var(--ink); }
+.nav-btn.active { background: var(--primary-soft); color: var(--primary-dark); }
+[data-theme="dark"] .nav-btn.active { color: var(--primary); }
+.nav-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: var(--amber); color: #fff; font-size: 11px; font-weight: 900;
+  padding: 2px 7px; border-radius: 99px;
+}
+
+.sidebar-foot {
+  padding: 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px;
+}
+.sims-link {
+  display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px;
+  border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line);
+  text-decoration: none; font-size: 12.5px; font-weight: 800; color: var(--slate); transition: .18s;
+}
+.sims-link:hover { border-color: var(--primary); color: var(--primary); }
+
+.sidebar-backdrop {
+  display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); z-index: 55; backdrop-filter: blur(2px);
+}
+.sidebar-backdrop.show { display: block; }
+
+.main-wrap {
+  flex: 1; margin-left: var(--sidebar-w); min-width: 0; display: flex; flex-direction: column;
+  transition: margin-left .25s ease;
+}
+.main-wrap.expanded { margin-left: 78px; }
+
+.topbar {
+  height: var(--topbar-h); position: sticky; top: 0; z-index: 40;
+  background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line); padding: 0 22px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+[data-theme="dark"] .topbar { background: rgba(17, 24, 39, 0.88); }
+
+.top-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 11px; border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--ink); font-size: 16px; cursor: pointer;
+  display: inline-grid; place-items: center; transition: .18s; flex-shrink: 0;
+}
+.icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+.search-bar {
+  position: relative; max-width: 380px; width: 100%;
+}
+.search-bar input {
+  width: 100%; padding: 9px 14px 9px 36px; border-radius: 12px; border: 1.5px solid var(--line);
+  background: var(--surface-2); color: var(--ink); font-size: 13.5px; font-weight: 600; outline: none;
+}
+.search-bar input:focus { border-color: var(--primary); background: var(--surface); }
+.search-bar span { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .65; }
+
+.top-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .role-pill {
-  padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 99px; font-size: 12.5px; font-weight: 800;
+  display: flex; align-items: center; gap: 6px; white-space: nowrap;
 }
-.role-Siswa { background: #dcfce7; color: #15803d; }
-.role-Guru, .role-Admin { background: var(--primary-soft); color: var(--primary-dark); }
+.role-Siswa { background: var(--emerald-soft); color: var(--emerald-dark); }
+.role-Guru { background: var(--primary-soft); color: var(--primary-dark); }
+.role-Admin { background: var(--amber-soft); color: var(--amber); }
 .role-Kepala { background: var(--purple-soft); color: var(--purple); }
-.btn-logout {
-  padding: 8px 14px; border-radius: 10px; border: 1px solid #fecdd3; background: #fff1f2;
-  color: var(--rose); font-weight: 800; font-size: 13px; cursor: pointer; transition: .2s;
-}
-.btn-logout:hover { background: var(--rose); color: #fff; }
+[data-theme="dark"] .role-Siswa { color: var(--emerald); }
+[data-theme="dark"] .role-Guru { color: var(--primary); }
 
-/* ================= CONTAINER & HERO BANNER ================= */
-.main-container { width: min(1240px, 100%); margin: 24px auto; padding: 0 20px 40px; flex: 1; }
-.welcome-banner {
-  background: linear-gradient(135deg, #0284c7, #0d9488); color: #fff; border-radius: 24px;
-  padding: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  margin-bottom: 24px; box-shadow: 0 12px 30px rgba(2, 132, 199, 0.2);
-}
-.welcome-text h1 { font-size: clamp(22px, 3vw, 30px); font-weight: 900; margin-bottom: 6px; }
-.welcome-text p { font-size: 15px; opacity: 0.92; line-height: 1.5; }
-.welcome-actions { display: flex; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
-.btn-white {
-  background: #fff; color: var(--primary-dark); border: none; padding: 12px 18px; border-radius: 14px;
-  font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.1); transition: .2s;
-}
-.btn-white:hover { transform: translateY(-2px); }
+.content-area { padding: 24px; max-width: 1360px; width: 100%; margin: 0 auto; flex: 1; }
+.view-section { display: none; animation: fadeIn .2s ease; }
+.view-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ================= STATISTIK RINGKAS ================= */
-.stats-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;
+/* =========================================================================
+   4. COMPONENTS: BUTTONS, CARDS, BANNERS, KPI, TABLES, CHARTS
+   ========================================================================= */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: none; border-radius: 11px; padding: 9px 15px; font-size: 13px; font-weight: 800;
+  cursor: pointer; text-decoration: none; transition: .18s; white-space: nowrap;
 }
-.stat-card {
-  background: var(--surface); padding: 20px; border-radius: 20px; box-shadow: var(--shadow);
-  border-left: 5px solid var(--primary); display: flex; align-items: center; justify-content: space-between;
-}
-.stat-info span { font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-.stat-info strong { display: block; font-size: 30px; font-weight: 900; margin-top: 4px; color: var(--ink); }
-.stat-icon { width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; font-size: 24px; background: var(--primary-soft); }
-
-/* ================= MENU MATA PELAJARAN (PILL BAR) ================= */
-.section-head {
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
-}
-.section-head h3 { font-size: 19px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
-.subject-pills {
-  display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 22px; scrollbar-width: thin;
-}
-.sub-pill {
-  flex-shrink: 0; border: 2px solid var(--line); background: var(--surface); color: var(--ink);
-  padding: 10px 16px; border-radius: 99px; font-size: 14px; font-weight: 800; cursor: pointer;
-  display: flex; align-items: center; gap: 8px; transition: .2s;
-}
-.sub-pill:hover { border-color: var(--primary); transform: translateY(-1px); }
-.sub-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 6px 16px rgba(2, 132, 199, 0.25); }
-
-/* ================= GRID KARTU LKPD RESPONSIF ================= */
-.cards-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 32px;
-}
-.lkpd-card {
-  background: var(--surface); border-radius: 22px; border: 2px solid #edf2f7; box-shadow: var(--shadow);
-  padding: 22px; display: flex; flex-direction: column; justify-content: space-between;
-  transition: .25s; position: relative; overflow: hidden;
-}
-.lkpd-card:hover { transform: translateY(-4px); border-color: #bae6fd; box-shadow: 0 16px 35px rgba(2, 132, 199, 0.12); }
-.card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-.sub-tag {
-  padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 900; display: inline-flex; align-items: center; gap: 5px;
-}
-.code-tag { font-size: 12px; font-weight: 800; color: var(--muted); background: #f1f5f9; padding: 4px 10px; border-radius: 8px; }
-.lkpd-card h4 { font-size: 18px; font-weight: 900; color: var(--ink); margin-bottom: 8px; line-height: 1.35; }
-.lkpd-card p { font-size: 14px; color: var(--muted); line-height: 1.55; margin-bottom: 16px; }
-.card-meta {
-  font-size: 12px; color: var(--muted); font-weight: 700; border-top: 1px dashed var(--line);
-  padding-top: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;
-}
-.card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.btn-card {
-  flex: 1; text-align: center; padding: 11px 14px; border-radius: 12px; font-weight: 800; font-size: 14px;
-  border: none; cursor: pointer; text-decoration: none; transition: .2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-}
+.btn:hover { transform: translateY(-1px); }
+.btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
 .btn-primary { background: var(--primary); color: #fff; }
 .btn-primary:hover { background: var(--primary-dark); }
 .btn-emerald { background: var(--emerald); color: #fff; }
-.btn-soft { background: #f1f5f9; color: #334155; }
-.btn-soft:hover { background: #e2e8f0; }
+.btn-emerald:hover { background: var(--emerald-dark); }
+.btn-amber { background: var(--amber); color: #fff; }
+.btn-rose { background: var(--rose-soft); color: var(--rose); border: 1px solid rgba(225,29,72,0.25); }
+.btn-rose:hover { background: var(--rose); color: #fff; }
+.btn-soft { background: var(--surface-2); color: var(--slate); border: 1px solid var(--line); }
+.btn-soft:hover { border-color: var(--primary); color: var(--primary); }
+.btn-sm { padding: 6px 11px; font-size: 12px; border-radius: 9px; }
 
-/* ================= TABEL MONITORING GURU & KEPSEK ================= */
-.panel-box {
-  background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); border: 1px solid var(--line); overflow: hidden; margin-bottom: 28px;
+.hero-banner {
+  background: linear-gradient(135deg, #0284c7, #059669); color: #fff; border-radius: 22px;
+  padding: 26px 28px; display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  margin-bottom: 22px; box-shadow: 0 14px 32px rgba(2, 132, 199, 0.22); flex-wrap: wrap;
 }
-.panel-bar {
-  padding: 18px 24px; background: #f8fafc; border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+.hero-banner h1 { font-size: clamp(20px, 2.8vw, 27px); font-weight: 900; margin-bottom: 5px; }
+.hero-banner p { font-size: 14px; opacity: .92; max-width: 680px; line-height: 1.5; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-hero-white { background: #fff; color: #0369a1; }
+.btn-hero-dark { background: rgba(15, 23, 42, 0.35); color: #fff; border: 1px solid rgba(255,255,255,0.28); }
+
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px; margin-bottom: 22px;
 }
-.panel-bar h3 { font-size: 17px; font-weight: 900; }
-.filter-group { display: flex; gap: 10px; flex-wrap: wrap; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--primary);
+  border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.kpi-card span { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+.kpi-card strong { display: block; font-size: 27px; font-weight: 900; margin-top: 3px; }
+.kpi-card small { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px; font-weight: 700; }
+.kpi-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
+
+.section-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.section-bar h2 { font-size: 19px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+.filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .filter-select {
-  padding: 9px 14px; border: 2px solid var(--line); border-radius: 12px; font-weight: 700; font-size: 13px; outline: none; background: #fff;
+  padding: 8px 13px; border: 1.5px solid var(--line); border-radius: 11px;
+  background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 700; outline: none;
 }
+.filter-select:focus { border-color: var(--primary); }
+
+.subject-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 18px; }
+.sub-pill {
+  flex-shrink: 0; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+  padding: 8px 14px; border-radius: 99px; font-size: 13px; font-weight: 800; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; transition: .18s;
+}
+.sub-pill:hover { border-color: var(--primary); }
+.sub-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 18px; margin-bottom: 24px;
+}
+.item-card {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; padding: 20px;
+  box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between; transition: .2s;
+}
+.item-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.tag-pill {
+  padding: 4px 10px; border-radius: 99px; font-size: 11.5px; font-weight: 900;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.code-pill { font-size: 11px; font-weight: 800; color: var(--muted); background: var(--surface-2); padding: 4px 9px; border-radius: 8px; border: 1px solid var(--line); }
+.item-card h4 { font-size: 16.5px; font-weight: 900; line-height: 1.35; margin-bottom: 6px; }
+.item-card p { font-size: 13.5px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+.card-meta {
+  border-top: 1px dashed var(--line); padding-top: 10px; margin-bottom: 12px;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 12px; font-weight: 700; color: var(--muted);
+}
+.card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.panel-box {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+  box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px;
+}
+.panel-head {
+  padding: 16px 20px; background: var(--surface-2); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.panel-head h3 { font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+.panel-body { padding: 20px; }
+
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; text-align: left; }
-th { background: #f8fafc; padding: 13px 20px; font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; border-bottom: 2px solid var(--line); }
-td { padding: 15px 20px; border-bottom: 1px solid var(--line); font-size: 14px; vertical-align: middle; }
-tr:hover { background: #f8fafc; }
-.badge-status { padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 800; display: inline-block; }
-.st-pending { background: var(--amber-soft); color: #b45309; }
-.st-done { background: #dcfce7; color: #15803d; }
+th {
+  background: var(--surface-2); padding: 12px 16px; font-size: 11.5px; font-weight: 900;
+  color: var(--muted); text-transform: uppercase; letter-spacing: .4px; border-bottom: 2px solid var(--line); white-space: nowrap;
+}
+td { padding: 13px 16px; border-bottom: 1px solid var(--line); font-size: 13.5px; vertical-align: middle; }
+tr:hover td { background: var(--surface-2); }
 
-/* ================= MODAL INPUT LKPD BARU ================= */
+.badge-st { padding: 4px 10px; border-radius: 99px; font-size: 11.5px; font-weight: 800; display: inline-block; white-space: nowrap; }
+.st-done { background: var(--emerald-soft); color: var(--emerald-dark); }
+.st-wait { background: var(--amber-soft); color: var(--amber); }
+.st-bad  { background: var(--rose-soft); color: var(--rose); }
+.st-info { background: var(--primary-soft); color: var(--primary-dark); }
+[data-theme="dark"] .st-done { color: var(--emerald); }
+[data-theme="dark"] .st-info { color: var(--primary); }
+
+/* SUB-TABS */
+.sub-tabs { display: flex; gap: 8px; border-bottom: 2px solid var(--line); margin-bottom: 18px; flex-wrap: wrap; }
+.sub-tab {
+  border: none; background: transparent; color: var(--muted); padding: 10px 16px;
+  font-size: 13.5px; font-weight: 800; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+}
+.sub-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* =========================================================================
+   5. ANALYTICS CHARTS (TP BAR + KKTP LINE + HIGHLIGHTS + DISTRACTOR)
+   ========================================================================= */
+.hl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.hl-card { border-radius: 16px; padding: 16px 18px; border: 1.5px solid var(--line); }
+.hl-best { background: var(--emerald-soft); border-color: var(--emerald); }
+.hl-warn { background: var(--amber-soft); border-color: var(--amber); }
+.hl-card small { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .5px; color: var(--slate); }
+.hl-card strong { display: block; font-size: 20px; font-weight: 900; margin: 4px 0; }
+.hl-card p { font-size: 12.5px; color: var(--slate); font-weight: 600; }
+
+.tp-chart-list { display: flex; flex-direction: column; gap: 14px; padding-top: 16px; }
+.tp-bar-row { display: grid; grid-template-columns: 220px 1fr 64px; gap: 12px; align-items: center; }
+.tp-bar-name { font-size: 13px; font-weight: 900; line-height: 1.25; }
+.tp-bar-name small { display: block; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+.tp-track { position: relative; height: 28px; background: var(--line); border-radius: 99px; overflow: visible; }
+.tp-fill {
+  height: 100%; border-radius: 99px; display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 10px; color: #fff; font-size: 11.5px; font-weight: 900; transition: width .4s ease; min-width: 14px;
+}
+.tp-fill.pass { background: linear-gradient(90deg, #10b981, #059669); }
+.tp-fill.fail { background: linear-gradient(90deg, #f97316, #e11d48); }
+.kktp-marker { position: absolute; top: -5px; bottom: -5px; width: 2px; border-left: 2px dashed var(--ink); z-index: 3; pointer-events: none; }
+.kktp-tag {
+  position: absolute; top: -22px; left: 50%; transform: translateX(-50%); background: var(--ink);
+  color: var(--surface); font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 6px; white-space: nowrap;
+}
+.tp-pct { font-size: 14px; font-weight: 900; text-align: right; }
+
+.dist-chip {
+  display: inline-block; padding: 2px 7px; border-radius: 6px; font-size: 11.5px; font-weight: 800;
+  margin: 2px; background: var(--surface-2); border: 1px solid var(--line);
+}
+.dist-chip.is-key { background: var(--emerald-soft); border-color: var(--emerald); color: var(--emerald-dark); }
+[data-theme="dark"] .dist-chip.is-key { color: var(--emerald); }
+
+.hardest-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.hard-card {
+  background: var(--rose-soft); border: 1.5px solid rgba(225,29,72,0.3); border-radius: 14px; padding: 14px;
+}
+.hard-card strong { font-size: 16px; color: var(--rose); display: block; }
+.hard-card small { font-size: 12px; color: var(--slate); font-weight: 700; }
+
+/* EXEC BARS */
+.exec-bars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.bar-row .bar-label { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 800; margin-bottom: 5px; }
+.bar-track { height: 9px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #0284c7, #059669); border-radius: 99px; }
+
+/* =========================================================================
+   6. MODALS, CHECKBOX GRID & TOAST
+   ========================================================================= */
 .modal-backdrop {
-  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
-  display: none; place-items: center; z-index: 50; padding: 18px;
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.62); backdrop-filter: blur(4px);
+  display: none; place-items: center; z-index: 120; padding: 16px;
 }
+.modal-backdrop.show { display: grid; }
 .modal-box {
-  width: min(560px, 100%); background: #fff; border-radius: 24px; padding: 28px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.25); max-height: 92vh; overflow-y: auto;
+  width: min(580px, 100%); background: var(--surface); border: 1px solid var(--line);
+  border-radius: 22px; padding: 26px; box-shadow: var(--shadow-lg); max-height: 92vh; overflow-y: auto;
 }
-.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
-.modal-head h3 { font-size: 19px; font-weight: 900; }
-
-/* GRAFIK BAR SEDERHANA UNTUK KEPSEK */
-.bar-row { margin-bottom: 12px; }
-.bar-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 4px; }
-.bar-track { height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
-.bar-fill { height: 100%; background: linear-gradient(90deg, #0284c7, #0d9488); border-radius: 99px; }
-
-@media (max-width: 768px) {
-  .welcome-banner { flex-direction: column; align-items: flex-start; padding: 22px; }
-  .topbar { padding: 12px 16px; }
-  .main-container { padding: 0 14px 32px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.modal-head h3 { font-size: 18px; font-weight: 900; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.class-checks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+.class-check-item {
+  display: flex; align-items: center; gap: 7px; padding: 8px 10px; border-radius: 10px;
+  border: 1.5px solid var(--line); background: var(--surface-2); font-size: 13px; font-weight: 700; cursor: pointer;
 }
+
+.toast {
+  position: fixed; bottom: 22px; right: 22px; z-index: 200; background: #0f172a; color: #fff;
+  padding: 12px 18px; border-radius: 13px; font-size: 13.5px; font-weight: 800;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.28); display: none; max-width: 380px;
+}
+.toast.show { display: block; animation: fadeIn .2s ease; }
+.toast.ok { background: #047857; }
+.toast.err { background: #be123c; }
+
+.empty-state {
+  grid-column: 1 / -1; background: var(--surface); border: 2px dashed var(--line);
+  border-radius: 20px; padding: 40px 20px; text-align: center;
+}
+.empty-state .em-icon { font-size: 42px; margin-bottom: 8px; }
+.empty-state h4 { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+.empty-state p { font-size: 13.5px; color: var(--muted); }
+
+/* =========================================================================
+   7. RESPONSIVE & A4 PRINT STYLESHEET
+   ========================================================================= */
+@media (max-width: 960px) {
+  .sidebar { transform: translateX(-100%); width: var(--sidebar-w) !important; }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .main-wrap, .main-wrap.expanded { margin-left: 0 !important; }
+  .content-area { padding: 16px; }
+  .search-bar { max-width: 210px; }
+  .role-pill span.hide-sm { display: none; }
+}
+@media (max-width: 640px) {
+  .form-row-2 { grid-template-columns: 1fr; }
+  .tp-bar-row { grid-template-columns: 1fr; gap: 6px; }
+  .tp-pct { text-align: left; }
+  .search-bar { display: none; }
+  .hero-banner { padding: 20px; }
+}
+
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  body { background: #fff !important; color: #000 !important; }
+  .sidebar, .topbar, .no-print, .hero-actions, .sub-tabs, .filter-row, .btn { display: none !important; }
+  .main-wrap { margin-left: 0 !important; }
+  .content-area { padding: 0 !important; max-width: 100% !important; }
+  .panel-box, .kpi-card, .hl-card { box-shadow: none !important; border: 1px solid #94a3b8 !important; break-inside: avoid; }
+  .print-header { display: block !important; text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 16px; }
+}
+.print-header { display: none; }
 </style>
 </head>
 <body>
@@ -241,249 +476,688 @@ tr:hover { background: #f8fafc; }
     <div class="login-header">
       <div class="school-crest">🏫</div>
       <h1>LMS SD Negeri 1 Sukahaji</h1>
-      <p>Portal Pembelajaran Interaktif & Evaluasi Digital</p>
-      <div class="sec-badge">🔒 Terintegrasi Database Sistem Informasi Sekolah</div>
+      <p>Portal Pembelajaran, Asesmen Sumatif &amp; Analitik Digital V5.0</p>
+      <div class="sec-badge">🔒 Terintegrasi SSO Database Sekolah</div>
     </div>
 
     <div id="loginAlert" class="login-alert"></div>
 
     <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="form-group">
-        <label>Username (NISN Siswa / NIP Guru)</label>
+        <label>Username (NISN Siswa / NIP Guru / Admin)</label>
         <div class="input-box">
           <input type="text" id="inUsername" placeholder="Masukkan NISN atau NIP..." required autocomplete="username">
         </div>
       </div>
 
       <div class="form-group">
-        <label>Password</label>
+        <label>Kata Sandi</label>
         <div class="input-box">
           <input type="password" id="inPassword" placeholder="Masukkan kata sandi..." required autocomplete="current-password">
           <button type="button" class="toggle-pass" onclick="togglePass()" title="Lihat Sandi">👁️</button>
         </div>
       </div>
 
-      <button type="submit" class="btn-login" id="btnSubmitLogin">🚀 Masuk ke Portal Belajar</button>
+      <button type="submit" class="btn-login" id="btnSubmitLogin">🚀 Masuk ke Portal LMS</button>
     </form>
 
-    <p style="text-align:center; font-size:12px; color:#64748b; margin-top:20px; line-height:1.5;">
+    <p style="text-align:center; font-size:12px; color:var(--muted); margin-top:18px; line-height:1.5;">
       Mendukung <b>Single Sign-On (SSO)</b> otomatis dari Web Sistem Informasi Digital SDN 1 Sukahaji.
     </p>
   </div>
 </div>
 
-<!-- ==================== 2. APLIKASI UTAMA PORTAL ==================== -->
-<div class="portal-app" id="portalView">
-  <header class="topbar">
-    <div class="brand-area">
+<!-- ==================== 2. APLIKASI UTAMA 3-ZONA ==================== -->
+<div class="app-shell" id="portalApp">
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleMobileSidebar(false)"></div>
+
+  <!-- ZONA KIRI: SIDEBAR NAVIGASI -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
       <div class="brand-logo">📚</div>
-      <div class="brand-text">
+      <div class="brand-meta">
         <h2>LMS SDN 1 Sukahaji</h2>
-        <span id="topSubtitle">Portal Pembelajaran Digital</span>
-      </div>
-    </div>
-    <div class="user-area">
-      <a href="https://sdn1sukahaji.github.io/sistem-informasi-digital-sdn1sukahaji/dashboard.html" class="btn-card btn-soft" style="padding: 8px 14px; font-size: 13px; border-radius: 10px; text-decoration: none;">🏠 Ruang Kerja SIMS</a>
-      <div class="role-pill" id="userBadge">👤 Memuat...</div>
-      <button class="btn-logout" onclick="logoutLMS()">Keluar 🚪</button>
-    </div>
-  </header>
-
-  <main class="main-container">
-    <!-- BANNER SAMBUTAN DINAMIS SESUAI ROLE -->
-    <div class="welcome-banner" id="welcomeBanner">
-      <div class="welcome-text">
-        <h1 id="welcomeTitle">Selamat Datang!</h1>
-        <p id="welcomeDesc">Pilih mata pelajaran di bawah ini untuk memulai petualangan belajarmu.</p>
-      </div>
-      <div class="welcome-actions" id="teacherTopActions" style="display:none;">
-        <button class="btn-white" onclick="openPublishModal()">➕ Kirim / Input Link LKPD</button>
-        <button class="btn-white" style="background:#0f172a; color:#fff;" onclick="refreshPortalData()">🔄 Segarkan Data</button>
+        <span>Ekosistem Digital V5.0</span>
       </div>
     </div>
 
-    <!-- KARTU STATISTIK DINAMIS -->
-    <div class="stats-grid" id="statsContainer"></div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
 
-    <!-- PANEL KHUSUS KEPALA SEKOLAH (ANALITIK EKSEKUTIF) -->
-    <div class="panel-box" id="kepsekAnalytics" style="display:none; padding:24px;">
-      <h3 style="margin-bottom:16px;">📊 Rekapitulasi Sebaran LKPD & Ketuntasan 7 Mata Pelajaran</h3>
-      <div id="kepsekBars" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:18px;"></div>
+    <div class="sidebar-foot">
+      <a href="https://sdn1sukahaji.github.io/sistem-informasi-digital-sdn1sukahaji/dashboard.html" class="sims-link" title="Kembali ke Ruang Kerja SIMS">
+        <span>🏠</span><span class="sidebar-foot-text">Ruang Kerja SIMS</span>
+      </a>
     </div>
+  </aside>
 
-    <!-- MENU PILIHAN 7 MATA PELAJARAN -->
-    <div class="section-head">
-      <h3 id="catalogHeading">🗂️ Daftar Lembar Kerja Murid (LKPD)</h3>
-      <span style="font-size:13px; color:var(--muted); font-weight:700;" id="cardCountInfo">Menampilkan semua mata pelajaran</span>
-    </div>
-
-    <div class="subject-pills" id="subjectPills"></div>
-
-    <!-- GRID KARTU LKPD (SISWA MENERIMA TUGAS / GURU MELIHAT KATALOG) -->
-    <div class="cards-grid" id="cardsGrid"></div>
-
-    <!-- TABEL RIWAYAT PENGUMPULAN & PENILAIAN (KHUSUS GURU, ADMIN, KEPSEK) -->
-    <div class="panel-box" id="submissionsPanel" style="display:none;">
-      <div class="panel-bar">
-        <h3>📋 Riwayat Pengumpulan Kelompok & Penilaian</h3>
-        <div class="filter-group">
-          <select class="filter-select" id="tableSubFilter" onchange="renderSubmissionsTable()">
-            <option value="ALL">Semua Mata Pelajaran</option>
-          </select>
-          <select class="filter-select" id="tableStatusFilter" onchange="renderSubmissionsTable()">
-            <option value="ALL">Semua Status</option>
-            <option value="Belum Dinilai">⏳ Menunggu Dinilai</option>
-            <option value="Sudah Dinilai">✅ Sudah Dinilai</option>
-          </select>
+  <!-- ZONA TENGAH & ATAS -->
+  <div class="main-wrap" id="mainWrap">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn" onclick="handleSidebarToggle()" title="Buka/Tutup Menu">☰</button>
+        <div class="search-bar">
+          <span>🔍</span>
+          <input type="search" id="globalSearch" placeholder="Cari LKPD, Sumatif, siswa, atau kode..." oninput="handleGlobalSearch()">
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Waktu Kirim</th>
-              <th>Mata Pelajaran</th>
-              <th>ID / Judul LKPD</th>
-              <th>Anggota Kelompok</th>
-              <th>Status & Nilai</th>
-              <th>Tindakan</th>
-            </tr>
-          </thead>
-          <tbody id="submissionsTableBody"></tbody>
-        </table>
+      <div class="top-right">
+        <button class="icon-btn" onclick="refreshPortalData(true)" title="Segarkan Data">🔄</button>
+        <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Ganti Tema Terang/Gelap">🌙</button>
+        <div class="role-pill" id="userBadge">👤 Memuat...</div>
+        <button class="btn btn-rose btn-sm" onclick="logoutLMS()" title="Keluar">Keluar 🚪</button>
       </div>
-    </div>
-  </main>
+    </header>
+
+    <main class="content-area">
+      <!-- KOP CETAK A4 (HANYA TAMPIL SAAT PRINT) -->
+      <div class="print-header">
+        <h2 style="font-size:18px;font-weight:900;">LAPORAN ANALITIK PEMBELAJARAN — SD NEGERI 1 SUKAHAJI</h2>
+        <p id="printMetaInfo" style="font-size:12px;margin-top:4px;"></p>
+      </div>
+
+      <!-- ==================== VIEW 1: BERANDA / DASBOR ==================== -->
+      <section class="view-section active" id="view-dashboard">
+        <div class="hero-banner">
+          <div>
+            <h1 id="welcomeTitle">Selamat Datang di LMS V5.0!</h1>
+            <p id="welcomeDesc">Memuat ruang belajar digital Anda...</p>
+          </div>
+          <div class="hero-actions" id="heroQuickActions"></div>
+        </div>
+
+        <div class="kpi-grid" id="dashboardKpiGrid"></div>
+
+        <!-- Panel Supervisi Eksekutif (Admin & Kepala Sekolah) -->
+        <div class="panel-box" id="execOverviewPanel" style="display:none;">
+          <div class="panel-head">
+            <h3>📊 Distribusi LKPD, Asesmen Sumatif &amp; Ketuntasan per Mata Pelajaran</h3>
+            <button class="btn btn-soft btn-sm no-print" onclick="printReport('Rekapitulasi Supervisi LMS')">🖨️ Cetak A4</button>
+          </div>
+          <div class="panel-body">
+            <div class="exec-bars-grid" id="execSubjectBars"></div>
+          </div>
+        </div>
+
+        <!-- Ringkasan Cepat (Antrean Terbaru untuk Guru / Misi Aktif untuk Siswa) -->
+        <div class="panel-box" id="dashboardRecentPanel">
+          <div class="panel-head">
+            <h3 id="recentPanelTitle">⚡ Aktivitas &amp; Tugas Terbaru</h3>
+            <div id="recentPanelAction"></div>
+          </div>
+          <div class="panel-body" id="recentPanelBody"></div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 2: KATALOG LKPD (FORMATIF V4.2) ==================== -->
+      <section class="view-section" id="view-lkpd">
+        <div class="section-bar">
+          <h2>📝 Katalog Lembar Kerja Murid (LKPD)</h2>
+          <div class="filter-row">
+            <select class="filter-select" id="lkpdClassFilter" onchange="renderLkpdCatalog()"></select>
+            <button class="btn btn-primary" id="btnAddLkpd" style="display:none;" onclick="openLkpdModal()">➕ Tambah LKPD</button>
+          </div>
+        </div>
+
+        <div class="subject-pills" id="lkpdSubjectPills"></div>
+        <div class="cards-grid" id="lkpdCardsGrid"></div>
+      </section>
+
+      <!-- ==================== VIEW 3: ASESMEN SUMATIF (V4.3) ==================== -->
+      <section class="view-section" id="view-sumatif">
+        <div class="section-bar">
+          <h2>🎯 Katalog Asesmen Sumatif (V4.3)</h2>
+          <div class="filter-row">
+            <select class="filter-select" id="sumatifClassFilter" onchange="renderSumatifCatalog()"></select>
+            <button class="btn btn-emerald" id="btnAddSumatif" style="display:none;" onclick="openSumatifModal()">➕ Terbitkan Sumatif</button>
+          </div>
+        </div>
+
+        <div class="subject-pills" id="sumatifSubjectPills"></div>
+        <div class="cards-grid" id="sumatifCardsGrid"></div>
+      </section>
+
+      <!-- ==================== VIEW 4: MONITORING & KOREKSI (GURU/ADMIN/KEPSEK) ==================== -->
+      <section class="view-section" id="view-monitoring">
+        <div class="section-bar">
+          <h2>📋 Monitoring Pengumpulan &amp; Koreksi</h2>
+          <div class="filter-row">
+            <select class="filter-select" id="monClassFilter" onchange="renderMonitoringTables()"></select>
+            <select class="filter-select" id="monSubjectFilter" onchange="renderMonitoringTables()"></select>
+            <select class="filter-select" id="monStatusFilter" onchange="renderMonitoringTables()">
+              <option value="ALL">Semua Status</option>
+              <option value="PENDING">⏳ Menunggu Penilaian</option>
+              <option value="DONE">✅ Sudah Dinilai</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sub-tabs">
+          <button class="sub-tab active" id="tabMonSumatif" onclick="switchMonTab('sumatif')">🎯 Kiriman Sumatif (<span id="cntMonSum">0</span>)</button>
+          <button class="sub-tab" id="tabMonLkpd" onclick="switchMonTab('lkpd')">📝 Kiriman Kelompok LKPD (<span id="cntMonLkpd">0</span>)</button>
+        </div>
+
+        <div class="panel-box" id="monSumatifBox">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Waktu Kirim</th>
+                  <th>Siswa &amp; Kelas</th>
+                  <th>Mapel &amp; Paket Sumatif</th>
+                  <th>Nilai &amp; KKTP</th>
+                  <th>Status</th>
+                  <th>Tindakan</th>
+                </tr>
+              </thead>
+              <tbody id="monSumatifBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel-box" id="monLkpdBox" style="display:none;">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Waktu Kirim</th>
+                  <th>Mapel &amp; Kelas</th>
+                  <th>Kode LKPD</th>
+                  <th>Anggota Kelompok</th>
+                  <th>Status &amp; Nilai</th>
+                  <th>Tindakan</th>
+                </tr>
+              </thead>
+              <tbody id="monLkpdBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 5: ANALITIK TP & BUTIR SOAL (GURU/ADMIN/KEPSEK) ==================== -->
+      <section class="view-section" id="view-analytics">
+        <div class="section-bar">
+          <h2>📈 Analitik Ketercapaian TP &amp; Butir Soal (V4.3)</h2>
+          <div class="filter-row no-print">
+            <select class="filter-select" id="anSubjectSel" onchange="onAnalyticsSubjectChange()"></select>
+            <select class="filter-select" id="anPackageSel" onchange="loadSumatifAnalyticsData()"></select>
+            <select class="filter-select" id="anClassSel" onchange="loadSumatifAnalyticsData()"></select>
+            <button class="btn btn-primary btn-sm" onclick="loadSumatifAnalyticsData(true)">⚡ Muat Analitik</button>
+            <button class="btn btn-soft btn-sm" onclick="printReport('Analisis Ketercapaian TP & Butir Soal')">🖨️ Cetak A4</button>
+          </div>
+        </div>
+
+        <div id="analyticsLoader" style="display:none; padding:28px; text-align:center; font-weight:800; color:var(--primary);">
+          ⏳ Memuat data analitik `Item Scores JSON` &amp; `Rekap TP JSON` dari server...
+        </div>
+
+        <div id="analyticsContent">
+          <div class="kpi-grid" id="analyticsKpiGrid"></div>
+
+          <div class="sub-tabs no-print">
+            <button class="sub-tab active" id="tabAnTp" onclick="switchAnTab('tp')">🎯 Ketercapaian TP &amp; Matriks Siswa</button>
+            <button class="sub-tab" id="tabAnItem" onclick="switchAnTab('items')">🔬 Analisis Butir Soal &amp; Pengecoh</button>
+          </div>
+
+          <!-- Sub-tab TP -->
+          <div id="anTpPanel">
+            <div class="hl-grid" id="anTpHighlights"></div>
+
+            <div class="panel-box">
+              <div class="panel-head">
+                <h3>📊 Grafik Batang Rata-rata Capaian Kelas per TP</h3>
+                <span style="font-size:12px;font-weight:800;color:var(--muted)" id="anKktpLegend">KKTP: 75%</span>
+              </div>
+              <div class="panel-body">
+                <div class="tp-chart-list" id="anTpChartList"></div>
+              </div>
+            </div>
+
+            <div class="panel-box">
+              <div class="panel-head">
+                <h3>📑 Matriks Ketercapaian TP per Siswa</h3>
+                <button class="btn btn-emerald btn-sm no-print" onclick="exportTpMatrixCSV()">📥 Ekspor CSV</button>
+              </div>
+              <div class="table-wrap">
+                <table id="anTpMatrixTable">
+                  <thead id="anTpMatrixHead"></thead>
+                  <tbody id="anTpMatrixBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-tab Item Analysis -->
+          <div id="anItemPanel" style="display:none;">
+            <div class="panel-box">
+              <div class="panel-head">
+                <h3>🚨 5 Butir Soal Tersulit (Prioritas Pembahasan Ulang)</h3>
+              </div>
+              <div class="panel-body">
+                <div class="hardest-grid" id="anHardestItems"></div>
+              </div>
+            </div>
+
+            <div class="panel-box">
+              <div class="panel-head">
+                <h3>🔬 Tabel Analisis Butir Soal &amp; Sebaran Jawaban (Distraktor)</h3>
+                <button class="btn btn-emerald btn-sm no-print" onclick="exportItemAnalysisCSV()">📥 Ekspor CSV</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>TP</th>
+                      <th>Tipe</th>
+                      <th>Kunci</th>
+                      <th>Benar / Parsial / Salah</th>
+                      <th>Kesukaran (P)</th>
+                      <th>Penguasaan</th>
+                      <th>Distribusi Jawaban Siswa</th>
+                    </tr>
+                  </thead>
+                  <tbody id="anItemTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 6: RAPOR & GRAFIK TP SISWA ==================== -->
+      <section class="view-section" id="view-student-report">
+        <div class="section-bar">
+          <h2>🏆 Rapor Nilai &amp; Grafik Capaian TP Saya</h2>
+          <button class="btn btn-soft btn-sm no-print" onclick="loadStudentHistory(true)">🔄 Perbarui Rapor</button>
+        </div>
+        <div id="studentReportContainer"></div>
+      </section>
+
+      <!-- ==================== VIEW 7: PENGATURAN KURIKULUM (ADMIN ONLY) ==================== -->
+      <section class="view-section" id="view-admin-subjects">
+        <div class="section-bar">
+          <h2>⚙️ Manajemen Mata Pelajaran &amp; Kurikulum (Admin)</h2>
+          <button class="btn btn-primary" onclick="openSubjectModal()">➕ Tambah Mata Pelajaran</button>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-head">
+            <h3>📚 Konfigurasi Mapel per Jenjang Kelas (Kelas 1 – Kelas 6)</h3>
+            <span style="font-size:12px;color:var(--muted);font-weight:700;">Aturan ini langsung menentukan hak akses Guru Kelas, Guru Mapel, dan katalog Siswa.</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Urut</th>
+                  <th>Mata Pelajaran</th>
+                  <th>Tipe Pengampu</th>
+                  <th>Jenjang Kelas Aktif</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="adminSubjectsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 </div>
 
-<!-- ==================== MODAL INPUT / KIRIM LINK LKPD (GURU) ==================== -->
-<div class="modal-backdrop" id="publishModal">
+<!-- ==================== MODAL 1: TAMBAH / EDIT LKPD (FULL CRUD) ==================== -->
+<div class="modal-backdrop" id="lkpdModal">
   <div class="modal-box">
     <div class="modal-head">
-      <h3>📤 Kirim / Input Link LKPD Baru</h3>
-      <button onclick="closePublishModal()" style="background:none;border:none;font-size:20px;cursor:pointer;">✖</button>
+      <h3 id="lkpdModalTitle">📤 Tambah LKPD Baru</h3>
+      <button class="icon-btn" onclick="closeModal('lkpdModal')">✖</button>
     </div>
-    <form onsubmit="submitNewLKPD(event)">
-      <div class="form-group">
-        <label>Mata Pelajaran</label>
-        <select class="form-control" id="pubSubject" required></select>
+    <form onsubmit="submitLkpdForm(event)">
+      <input type="hidden" id="lkpdOldId">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Target Kelas</label>
+          <select class="form-control" id="lkpdKelas" onchange="syncSubjectSelectByClass('lkpdKelas', 'lkpdSubject')" required></select>
+        </div>
+        <div class="form-group">
+          <label>Mata Pelajaran</label>
+          <select class="form-control" id="lkpdSubject" required></select>
+        </div>
       </div>
       <div class="form-group">
-        <label>Kode / ID Lembar Kerja (Sama dengan LKPD_ID di kode HTML)</label>
-        <input type="text" class="form-control" id="pubId" placeholder="Contoh: 1.11_Pengurangan_TanpaMeminjam" required>
+        <label>Kode / ID LKPD (Wajib sama dengan <code>LKPD_ID</code> di file HTML)</label>
+        <input type="text" class="form-control" id="lkpdId" placeholder="Contoh: 3.5_Teks_Deskripsi_Rute_Sekolah" required>
       </div>
       <div class="form-group">
-        <label>Judul / Materi Pokok</label>
-        <input type="text" class="form-control" id="pubTitle" placeholder="Contoh: LKPD 1.11 - Misi Belanja (Pengurangan)" required>
+        <label>Judul Materi / LKPD</label>
+        <input type="text" class="form-control" id="lkpdTitle" placeholder="Contoh: LKPD 3.5 - Menulis Teks Deskripsi" required>
       </div>
       <div class="form-group">
-        <label>Tautan / Link URL Lembar Kerja (GitHub Pages)</label>
-        <input type="url" class="form-control" id="pubUrl" placeholder="https://iwansutiawan9-tech.github.io/..." required>
+        <label>URL Tautan LKPD (GitHub Pages)</label>
+        <input type="url" class="form-control" id="lkpdUrl" placeholder="https://iwansutiawan9-tech.github.io/..." required>
       </div>
       <div class="form-group">
         <label>Petunjuk Singkat untuk Siswa</label>
-        <input type="text" class="form-control" id="pubDesc" placeholder="Contoh: Kerjakan secara berkelompok 2-5 orang." required>
+        <textarea class="form-control" id="lkpdDesc" rows="2" placeholder="Contoh: Kerjakan bersama kelompok 2–5 siswa." required></textarea>
       </div>
-      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
-        <button type="button" class="btn-card btn-soft" style="flex:0 0 auto;" onclick="closePublishModal()">Batal</button>
-        <button type="submit" class="btn-card btn-primary" id="btnSaveLKPD" style="flex:0 0 auto;">🚀 Terbitkan ke Siswa</button>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:18px;">
+        <button type="button" class="btn btn-soft" onclick="closeModal('lkpdModal')">Batal</button>
+        <button type="submit" class="btn btn-primary" id="btnSaveLkpd">💾 Simpan &amp; Terbitkan</button>
       </div>
     </form>
   </div>
 </div>
 
+<!-- ==================== MODAL 2: TAMBAH / EDIT SUMATIF (FULL CRUD) ==================== -->
+<div class="modal-backdrop" id="sumatifModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="sumatifModalTitle">🎯 Terbitkan Asesmen Sumatif Baru</h3>
+      <button class="icon-btn" onclick="closeModal('sumatifModal')">✖</button>
+    </div>
+    <form onsubmit="submitSumatifForm(event)">
+      <input type="hidden" id="sumOldId">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Target Kelas</label>
+          <select class="form-control" id="sumKelas" onchange="syncSubjectSelectByClass('sumKelas', 'sumSubject')" required></select>
+        </div>
+        <div class="form-group">
+          <label>Mata Pelajaran</label>
+          <select class="form-control" id="sumSubject" required></select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Kode Paket (<code>SUMATIF_ID</code>)</label>
+          <input type="text" class="form-control" id="sumId" placeholder="Contoh: SAS-PendidikanPancasila-kls4" required>
+        </div>
+        <div class="form-group">
+          <label>KKTP (Nilai Minimal Tuntas)</label>
+          <input type="number" class="form-control" id="sumKktp" value="75" min="1" max="100" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Judul Asesmen Sumatif</label>
+        <input type="text" class="form-control" id="sumTitle" placeholder="Contoh: Sumatif Akhir Semester (SAS) Pendidikan Pancasila" required>
+      </div>
+      <div class="form-group">
+        <label>URL File HTML Sumatif V4.3 (GitHub Pages)</label>
+        <input type="url" class="form-control" id="sumUrl" placeholder="https://..." required>
+      </div>
+      <div class="form-group">
+        <label>Keterangan / Cakupan Bab</label>
+        <textarea class="form-control" id="sumDesc" rows="2" placeholder="Contoh: Mencakup TP1–TP4 Bab 1 & Bab 2 (40 soal)." required></textarea>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:18px;">
+        <button type="button" class="btn btn-soft" onclick="closeModal('sumatifModal')">Batal</button>
+        <button type="submit" class="btn btn-emerald" id="btnSaveSumatif">🚀 Simpan &amp; Terbitkan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== MODAL 3: TAMBAH / EDIT MAPEL (ADMIN ONLY) ==================== -->
+<div class="modal-backdrop" id="subjectModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="subjectModalTitle">📚 Pengaturan Mata Pelajaran</h3>
+      <button class="icon-btn" onclick="closeModal('subjectModal')">✖</button>
+    </div>
+    <form onsubmit="submitSubjectForm(event)">
+      <input type="hidden" id="subEditId">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Nama Mata Pelajaran (Utuh, tanpa singkatan kecuali standar)</label>
+          <input type="text" class="form-control" id="subName" placeholder="Contoh: Koding / PAI / PJOK" required>
+        </div>
+        <div class="form-group">
+          <label>Ikon Emoji</label>
+          <input type="text" class="form-control" id="subIcon" value="📘" required>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Tipe Pengampu</label>
+          <select class="form-control" id="subPengampu" required>
+            <option value="Guru Kelas">Guru Kelas (sesuai rombel)</option>
+            <option value="Guru Mapel">Guru Mapel (khusus mapel lintas kelas)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Urutan Tampil &amp; Status</label>
+          <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:8px;">
+            <input type="number" class="form-control" id="subOrder" value="11" min="1">
+            <select class="form-control" id="subStatus">
+              <option value="Aktif">Aktif</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Warna Teks/Aksen</label>
+          <input type="color" class="form-control" id="subColor" value="#0284c7" style="height:42px;padding:4px;">
+        </div>
+        <div class="form-group">
+          <label>Warna Latar Lencana</label>
+          <input type="color" class="form-control" id="subBg" value="#e0f2fe" style="height:42px;padding:4px;">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Jenjang Kelas yang Mengampu Mata Pelajaran Ini:</label>
+        <div class="class-checks" id="subClassChecks">
+          <label class="class-check-item"><input type="checkbox" value="Kelas 1"> Kelas 1</label>
+          <label class="class-check-item"><input type="checkbox" value="Kelas 2"> Kelas 2</label>
+          <label class="class-check-item"><input type="checkbox" value="Kelas 3"> Kelas 3</label>
+          <label class="class-check-item"><input type="checkbox" value="Kelas 4"> Kelas 4</label>
+          <label class="class-check-item"><input type="checkbox" value="Kelas 5"> Kelas 5</label>
+          <label class="class-check-item"><input type="checkbox" value="Kelas 6"> Kelas 6</label>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:18px;">
+        <button type="button" class="btn btn-soft" onclick="closeModal('subjectModal')">Batal</button>
+        <button type="submit" class="btn btn-primary" id="btnSaveSubject">💾 Simpan Pengaturan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== MODAL 4: KONFIRMASI HAPUS ==================== -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal-box" style="width:min(440px,100%);text-align:center;">
+    <div style="font-size:44px;margin-bottom:8px;">⚠️</div>
+    <h3 id="confirmTitle" style="margin-bottom:8px;">Konfirmasi Hapus</h3>
+    <p id="confirmMessage" style="font-size:13.5px;color:var(--muted);line-height:1.55;margin-bottom:20px;"></p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button class="btn btn-soft" onclick="closeModal('confirmModal')">Batal</button>
+      <button class="btn btn-rose" id="confirmActionBtn">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
 // =========================================================================
-// KONFIGURASI UTAMA PORTAL LMS V4.0 - SDN 1 SUKAHAJI
+// KONFIGURASI UTAMA PORTAL LMS V5.0 — SDN 1 SUKAHAJI
 // =========================================================================
-const ENDPOINT = 'https://script.google.com/macros/s/AKfycby5rj16xD-15Q1s0UxtK-h8AZEwbvAt5bsdGtsBuhkP-urB5SJzKlk8usPaNkdwcoqS/exec';
+const ENDPOINT      = 'https://script.google.com/macros/s/AKfycby5rj16xD-15Q1s0UxtK-h8AZEwbvAt5bsdGtsBuhkP-urB5SJzKlk8usPaNkdwcoqS/exec';
 const SIMS_AUTH_API = 'https://script.google.com/macros/s/AKfycbyfseRl94qmA0TaX1ODw3sr8Car6i0uf-3WEBKcJ8cDILdi459vW0CCqo28L3iGgHhVww/exec';
-const SESSION_KEY = 'sdn1_sukahaji_lms_session';
-const LOCKOUT_KEY = 'sdn1_sukahaji_login_lock';
+const SESSION_KEY   = 'sdn1_sukahaji_lms_session';
+const LOCKOUT_KEY   = 'sdn1_sukahaji_login_lock';
+const THEME_KEY     = 'sdn1_lms_theme';
 
-// 7 MATA PELAJARAN UTAMA SESUAI KURIKULUM
-const SUBJECTS = [
-  { id: 'ALL',                  name: 'Semua Mapel',          icon: '🌈', color: '#0284c7', bg: '#e0f2fe' },
-  { id: 'Pendidikan Pancasila', name: 'Pendidikan Pancasila', icon: '🦅', color: '#dc2626', bg: '#fee2e2' },
-  { id: 'Bahasa Indonesia',     name: 'Bahasa Indonesia',     icon: '📖', color: '#2563eb', bg: '#dbeafe' },
-  { id: 'Matematika',           name: 'Matematika',           icon: '🧮', color: '#d97706', bg: '#fef3c7' },
-  { id: 'IPAS',                 name: 'IPAS',                 icon: '🌱', color: '#059669', bg: '#d1fae5' },
-  { id: 'Bahasa Inggris',       name: 'Bahasa Inggris',       icon: '🌍', color: '#7c3aed', bg: '#ede9fe' },
-  { id: 'Seni Budaya',          name: 'Seni Budaya',          icon: '🎨', color: '#db2777', bg: '#fce7f3' },
-  { id: 'Bahasa Sunda',         name: 'Bahasa Sunda',         icon: '竹', color: '#0d9488', bg: '#ccfbf1' }
-];
-
+// STATE APLIKASI
 let currentUser = null;
-let authToken = null;
-let selectedSubject = 'ALL';
-let katalogLKPD = [];
-let rawSubmissions = [];
-let groupedSubmissions = [];
+let authToken   = null;
+let currentView = 'dashboard';
+let searchQuery = '';
 
-// ================= 1. INISIALISASI & DETEKSI SSO AMAN =================
-document.addEventListener("DOMContentLoaded", () => {
-  initSubjectMenus();
+let permissions = { allowedClasses: [], allowedSubjects: [], isMapelTeacher: false, canManageCurriculum: false };
+let subjectsList = [];
+let allSubjectsAdmin = [];
+let katalogLKPD = [];
+let katalogSumatif = [];
+let rawLkpdSubs = [];
+let groupedLkpdSubs = [];
+let sumatifSubs = [];
+
+let selLkpdSub = 'ALL';
+let selSumatifSub = 'ALL';
+let activeMonTab = 'sumatif';
+let activeAnTab = 'tp';
+
+// Cache analitik & rapor siswa agar pindah tab instan
+let analyticsCache = {};
+let activeAnalyticsRows = [];
+let activeAnalyticsKktp = 75;
+let computedTpMatrix = null;
+let computedItemAnalysis = [];
+let studentHistoryCache = null;
+
+// =========================================================================
+// UTILITAS UMUM
+// =========================================================================
+function escHtml(str) {
+  return String(str === undefined || str === null ? '' : str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function showToast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.classList.remove('show'), 3600);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function askConfirm(title, message, onConfirm) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMessage').textContent = message;
+  const btn = document.getElementById('confirmActionBtn');
+  btn.onclick = async () => {
+    btn.disabled = true;
+    btn.textContent = '⏳ Memproses...';
+    try { await onConfirm(); } finally {
+      btn.disabled = false;
+      btn.textContent = 'Ya, Hapus';
+      closeModal('confirmModal');
+    }
+  };
+  openModal('confirmModal');
+}
+
+function getSubjectMeta(name) {
+  const found = (allSubjectsAdmin.length ? allSubjectsAdmin : subjectsList)
+    .find(s => s.name.toLowerCase() === String(name || '').toLowerCase());
+  return found || { name: name || 'Umum', icon: '📘', color: '#0284c7', bg: '#e0f2fe' };
+}
+
+function formatDateTime(ts) {
+  const d = new Date(ts);
+  if (isNaN(d)) return '-';
+  return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function parseNumericScore(val) {
+  if (typeof val === 'number') return val;
+  const m = String(val || '').match(/\d+/);
+  return m ? Number(m[0]) : 0;
+}
+
+function canEditCatalog() {
+  return currentUser && (currentUser.role === 'Guru' || currentUser.role === 'Admin');
+}
+
+// =========================================================================
+// TEMA LIGHT / DARK & SIDEBAR
+// =========================================================================
+function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY) || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+}
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
+function handleSidebarToggle() {
+  if (window.innerWidth <= 960) {
+    const sb = document.getElementById('sidebar');
+    toggleMobileSidebar(!sb.classList.contains('mobile-open'));
+  } else {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById('mainWrap').classList.toggle('expanded');
+  }
+}
+
+function toggleMobileSidebar(open) {
+  document.getElementById('sidebar').classList.toggle('mobile-open', open);
+  document.getElementById('sidebarBackdrop').classList.toggle('show', open);
+}
+
+// =========================================================================
+// 1. INISIALISASI, AUTENTIKASI & SINGLE SIGN-ON (SSO)
+// =========================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   checkSSOAndSession();
 });
 
-function initSubjectMenus() {
-  const pillBox = document.getElementById("subjectPills");
-  pillBox.innerHTML = SUBJECTS.map(s => `
-    <button class="sub-pill ${s.id === 'ALL' ? 'active' : ''}" onclick="selectSubject('${s.id}', this)">
-      <span>${s.icon}</span> ${s.name}
-    </button>
-  `).join('');
-
-  const pubSel = document.getElementById("pubSubject");
-  const tabSel = document.getElementById("tableSubFilter");
-  SUBJECTS.filter(s => s.id !== 'ALL').forEach(s => {
-    pubSel.innerHTML += `<option value="${s.id}">${s.icon} ${s.name}</option>`;
-    tabSel.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-  });
-}
-
 async function checkSSOAndSession() {
   const params = new URLSearchParams(window.location.search);
-  const ssoUserParam = params.get('sso_user');
+  const ssoUserParam  = params.get('sso_user');
   const ssoTokenParam = params.get('sso_token') || localStorage.getItem('sdn1_sso_token') || '';
 
-  // A. Cek Sesi Tersimpan LMS Aktif
-  let saved = localStorage.getItem(SESSION_KEY);
+  // A. Cek sesi LMS aktif
+  const saved = localStorage.getItem(SESSION_KEY);
   if (saved && !ssoUserParam) {
     try {
-      let parsed = JSON.parse(saved);
+      const parsed = JSON.parse(saved);
       if (parsed.token && parsed.user) {
         currentUser = parsed.user;
-        authToken = parsed.token;
+        authToken   = parsed.token;
         return enterPortal();
       }
     } catch (e) {}
   }
 
-  // B. Cek Sesi Terpadu dari Sistem Informasi Digital (URL / Shared LocalStorage)
+  // B. Cek handoff SSO dari SIMS
   const targetSsoUser = ssoUserParam || localStorage.getItem('sdn1_sso_user');
   const simsUserSessionRaw = localStorage.getItem('userSession');
 
   if (targetSsoUser) {
-    showLoginAlert("⏳ Memverifikasi Keamanan Single Sign-On (SSO) SDN 1 Sukahaji...", "info");
+    showLoginAlert('⏳ Memverifikasi Single Sign-On (SSO) SDN 1 Sukahaji...', 'info');
     try {
       if (ssoTokenParam) {
-        let verifyRes = await fetch(`${SIMS_AUTH_API}?action=verify_sso&username=${encodeURIComponent(targetSsoUser)}&sso_token=${encodeURIComponent(ssoTokenParam)}&_t=${Date.now()}`);
-        let verifyJson = await verifyRes.json();
+        const verifyRes = await fetch(`${SIMS_AUTH_API}?action=verify_sso&username=${encodeURIComponent(targetSsoUser)}&sso_token=${encodeURIComponent(ssoTokenParam)}&_t=${Date.now()}`);
+        const verifyJson = await verifyRes.json();
         if (verifyJson.status !== 'success') {
-          showLoginAlert("⚠️ Sesi SSO telah berakhir. Silakan login kembali.", "error");
+          showLoginAlert('⚠️ Sesi SSO berakhir. Silakan login kembali.', 'error');
           return;
         }
       } else if (!simsUserSessionRaw) {
         return;
       }
 
-      let res = await fetch(ENDPOINT, {
+      const res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'verifySSO', ssoUsername: targetSsoUser, ssoToken: ssoTokenParam })
       });
-      let result = await res.json();
+      const result = await res.json();
       if (result.status === 'success') {
         saveSession(result.user, result.token);
         if (ssoUserParam) window.history.replaceState({}, document.title, window.location.pathname);
@@ -493,30 +1167,29 @@ async function checkSSOAndSession() {
   }
 }
 
-// ================= 2. PROSES LOGIN LOKAL DENGAN PROTEKSI BRUTE-FORCE =================
 async function handleLogin(e) {
   e.preventDefault();
-  let lockData = JSON.parse(localStorage.getItem(LOCKOUT_KEY) || '{"count":0,"until":0}');
+  const lockData = JSON.parse(localStorage.getItem(LOCKOUT_KEY) || '{"count":0,"until":0}');
   if (Date.now() < lockData.until) {
-    let sisa = Math.ceil((lockData.until - Date.now()) / 1000);
-    return showLoginAlert(`🔒 Terlalu banyak percobaan gagal. Coba lagi dalam ${sisa} detik.`, "error");
+    const sisa = Math.ceil((lockData.until - Date.now()) / 1000);
+    return showLoginAlert(`🔒 Terlalu banyak percobaan gagal. Coba lagi dalam ${sisa} detik.`, 'error');
   }
 
-  let u = document.getElementById("inUsername").value.trim();
-  let p = document.getElementById("inPassword").value.trim();
-  let btn = document.getElementById("btnSubmitLogin");
+  const u = document.getElementById('inUsername').value.trim();
+  const p = document.getElementById('inPassword').value.trim();
+  const btn = document.getElementById('btnSubmitLogin');
 
   btn.disabled = true;
-  btn.innerText = "⏳ Memverifikasi Keamanan Akun...";
-  showLoginAlert("Menghubungi server autentikasi SDN 1 Sukahaji...", "info");
+  btn.textContent = '⏳ Memverifikasi Akun...';
+  showLoginAlert('Menghubungi server autentikasi SDN 1 Sukahaji...', 'info');
 
   try {
-    let res = await fetch(ENDPOINT, {
+    const res = await fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action: 'login', username: u, password: p })
     });
-    let result = await res.json();
+    const result = await res.json();
 
     if (result.status === 'success') {
       localStorage.removeItem(LOCKOUT_KEY);
@@ -529,23 +1202,21 @@ async function handleLogin(e) {
         lockData.count = 0;
       }
       localStorage.setItem(LOCKOUT_KEY, JSON.stringify(lockData));
-      showLoginAlert("❌ " + result.message, "error");
+      showLoginAlert('❌ ' + result.message, 'error');
     }
   } catch (err) {
-    showLoginAlert("⚠️ Gagal terhubung ke server. Periksa koneksi internet Anda.", "error");
+    showLoginAlert('⚠️ Gagal terhubung ke server. Periksa koneksi internet Anda.', 'error');
   } finally {
     btn.disabled = false;
-    btn.innerText = "🚀 Masuk ke Portal Belajar";
+    btn.textContent = '🚀 Masuk ke Portal LMS';
   }
 }
 
 function saveSession(user, token) {
   currentUser = user;
-  authToken = token;
+  authToken   = token;
   localStorage.setItem(SESSION_KEY, JSON.stringify({ user, token }));
-  if (user && user.username) {
-    localStorage.setItem('sdn1_sso_user', user.username);
-  }
+  if (user && user.username) localStorage.setItem('sdn1_sso_user', user.username);
 }
 
 function logoutLMS() {
@@ -554,101 +1225,188 @@ function logoutLMS() {
   localStorage.removeItem('sdn1_sso_token');
   localStorage.removeItem('userSession');
   currentUser = null;
-  authToken = null;
-  document.getElementById("portalView").style.display = "none";
-  document.getElementById("loginView").style.display = "flex";
-  document.getElementById("loginForm").reset();
-  document.getElementById("loginAlert").style.display = "none";
+  authToken   = null;
+  analyticsCache = {};
+  studentHistoryCache = null;
+  document.getElementById('portalApp').classList.remove('active');
+  document.getElementById('loginView').style.display = 'flex';
+  document.getElementById('loginForm').reset();
+  document.getElementById('loginAlert').style.display = 'none';
 }
 
 function togglePass() {
-  let inp = document.getElementById("inPassword");
-  inp.type = inp.type === "password" ? "text" : "password";
+  const inp = document.getElementById('inPassword');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
 }
 
 function showLoginAlert(msg, type) {
-  let el = document.getElementById("loginAlert");
-  el.className = "login-alert " + type;
-  el.innerText = msg;
+  const el = document.getElementById('loginAlert');
+  el.className = 'login-alert ' + type;
+  el.textContent = msg;
 }
 
-// ================= 3. ROUTING DASHBOARD MULTI-ROLE =================
+// =========================================================================
+// 2. MASUK PORTAL, NAVIGASI MULTI-ROLE & MUAT DATA SERVER
+// =========================================================================
 async function enterPortal() {
-  document.getElementById("loginView").style.display = "none";
-  document.getElementById("portalView").style.display = "flex";
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('portalApp').classList.add('active');
 
-  let badge = document.getElementById("userBadge");
-  let roleClass = currentUser.role === 'Kepala Sekolah' ? 'role-Kepala' : `role-${currentUser.role}`;
-  badge.className = `role-pill ${roleClass}`;
-  badge.innerHTML = `👤 ${currentUser.nama} • <b>${currentUser.role}</b>`;
+  const roleClass = currentUser.role === 'Kepala Sekolah' ? 'role-Kepala' : ('role-' + currentUser.role);
+  const badge = document.getElementById('userBadge');
+  badge.className = 'role-pill ' + roleClass;
+  const subInfo = currentUser.role === 'Siswa'
+    ? (currentUser.kelas || 'Siswa')
+    : (currentUser.penugasan ? `${currentUser.role} • ${currentUser.penugasan}` : currentUser.role);
+  badge.innerHTML = `👤 <b>${escHtml(currentUser.nama)}</b> <span class="hide-sm">(${escHtml(subInfo)})</span>`;
 
-  let title = document.getElementById("welcomeTitle");
-  let desc = document.getElementById("welcomeDesc");
-  let topActions = document.getElementById("teacherTopActions");
-  let subPanel = document.getElementById("submissionsPanel");
-  let kepsekBox = document.getElementById("kepsekAnalytics");
+  buildSidebarNav();
+  setupRoleHero();
+  await refreshPortalData(false);
+  switchView('dashboard');
+}
 
-  if (currentUser.role === 'Siswa') {
-    title.innerText = `Halo, ${currentUser.nama}! 🌟`;
-    desc.innerText = `Pilih kartu mata pelajaran di bawah untuk mengerjakan misi LKPD dari Bapak/Ibu Guru atau melihat nilai bintangmu.`;
-    topActions.style.display = "none";
-    subPanel.style.display = "none";
-    kepsekBox.style.display = "none";
-    document.getElementById("catalogHeading").innerText = "🎒 Misi Tugas Belajar dari Guru";
-  } else if (currentUser.role === 'Kepala Sekolah') {
-    title.innerText = `Dashboard Supervisi Kepala Sekolah`;
-    desc.innerText = `Selamat datang, ${currentUser.nama}. Pantau ketercapaian pembelajaran digital, distribusi LKPD 7 mata pelajaran, dan hasil evaluasi siswa secara real-time.`;
-    topActions.style.display = "flex";
-    subPanel.style.display = "block";
-    kepsekBox.style.display = "block";
-    document.getElementById("catalogHeading").innerText = "🗂️ Katalog LKPD Terpublikasi";
+function buildSidebarNav() {
+  const role = currentUser.role;
+  const nav = document.getElementById('sidebarNav');
+  const items = [
+    { section: 'UTAMA' },
+    { id: 'dashboard', icon: '🏠', label: 'Dasbor Utama' },
+    { id: 'lkpd',      icon: '📝', label: role === 'Siswa' ? 'Misi LKPD' : 'Katalog LKPD' },
+    { id: 'sumatif',   icon: '🎯', label: role === 'Siswa' ? 'Asesmen Sumatif' : 'Katalog Sumatif' }
+  ];
+
+  if (role === 'Siswa') {
+    items.push({ section: 'CAPAIAN SAYA' });
+    items.push({ id: 'student-report', icon: '🏆', label: 'Rapor & Grafik TP' });
   } else {
-    title.innerText = `Portal Guru — ${currentUser.nama}`;
-    desc.innerText = `Kelola pengiriman tautan LKPD untuk 7 mata pelajaran dan berikan penilaian kelompok terpadu.`;
-    topActions.style.display = "flex";
-    subPanel.style.display = "block";
-    kepsekBox.style.display = "none";
-    document.getElementById("catalogHeading").innerText = "🗂️ Katalog Kartu LKPD";
+    items.push({ section: 'EVALUASI & ANALITIK' });
+    items.push({ id: 'monitoring', icon: '📋', label: 'Monitoring & Koreksi', badgeId: 'navPendingBadge' });
+    items.push({ id: 'analytics',  icon: '📈', label: 'Analitik TP & Butir' });
   }
 
-  await refreshPortalData();
+  if (role === 'Admin') {
+    items.push({ section: 'ADMINISTRATOR' });
+    items.push({ id: 'admin-subjects', icon: '⚙️', label: 'Kurikulum & Mapel' });
+  }
+
+  nav.innerHTML = items.map(it => {
+    if (it.section) return `<div class="nav-section-title">${it.section}</div>`;
+    return `
+      <button class="nav-btn" data-view="${it.id}" onclick="switchView('${it.id}')">
+        <span class="nav-icon">${it.icon}</span>
+        <span class="nav-text">${it.label}</span>
+        ${it.badgeId ? `<span class="nav-badge" id="${it.badgeId}" style="display:none;">0</span>` : ''}
+      </button>
+    `;
+  }).join('');
 }
 
-async function refreshPortalData() {
+function setupRoleHero() {
+  const role = currentUser.role;
+  const title = document.getElementById('welcomeTitle');
+  const desc  = document.getElementById('welcomeDesc');
+  const act   = document.getElementById('heroQuickActions');
+
+  document.getElementById('btnAddLkpd').style.display    = canEditCatalog() ? 'inline-flex' : 'none';
+  document.getElementById('btnAddSumatif').style.display = canEditCatalog() ? 'inline-flex' : 'none';
+  document.getElementById('execOverviewPanel').style.display = (role === 'Admin' || role === 'Kepala Sekolah') ? 'block' : 'none';
+
+  if (role === 'Siswa') {
+    title.textContent = `Halo, ${currentUser.nama}! 🌟`;
+    desc.textContent  = `Selamat belajar di ruang kelas digital ${currentUser.kelas || 'SDN 1 Sukahaji'}. Kerjakan misi LKPD dan Asesmen Sumatif dari Bapak/Ibu Guru, lalu pantau grafik capaian belajarmu.`;
+    act.innerHTML = `
+      <button class="btn btn-hero-white" onclick="switchView('lkpd')">📝 Buka Misi LKPD</button>
+      <button class="btn btn-hero-dark" onclick="switchView('student-report')">🏆 Lihat Rapor TP</button>
+    `;
+  } else if (role === 'Kepala Sekolah') {
+    title.textContent = `Dashboard Supervisi — ${currentUser.nama}`;
+    desc.textContent  = `Pantau keterlaksanaan LKPD, ketuntasan KKTP Asesmen Sumatif, serta analisis ketercapaian TP lintas Kelas 1 hingga Kelas 6 secara real-time.`;
+    act.innerHTML = `
+      <button class="btn btn-hero-white" onclick="switchView('analytics')">📈 Analitik TP &amp; Butir</button>
+      <button class="btn btn-hero-dark" onclick="switchView('monitoring')">📋 Supervisi Kiriman</button>
+    `;
+  } else if (role === 'Admin') {
+    title.textContent = `Ruang Administrator — ${currentUser.nama}`;
+    desc.textContent  = `Kelola pemetaan mata pelajaran Kelas 1–6, katalog LKPD & Sumatif lintas kelas, serta analitik mutu pembelajaran sekolah.`;
+    act.innerHTML = `
+      <button class="btn btn-hero-white" onclick="openSumatifModal()">🎯 Terbitkan Sumatif</button>
+      <button class="btn btn-hero-dark" onclick="switchView('admin-subjects')">⚙️ Atur Mapel</button>
+    `;
+  } else {
+    const scope = currentUser.penugasan ? ` (${currentUser.penugasan})` : '';
+    title.textContent = `Portal Guru${scope} — ${currentUser.nama}`;
+    desc.textContent  = `Kelola LKPD & Asesmen Sumatif dengan kontrol penuh (CRUD), periksa kiriman siswa, dan pantau peta ketuntasan TP serta analisis butir soal.`;
+    act.innerHTML = `
+      <button class="btn btn-hero-white" onclick="openLkpdModal()">➕ Tambah LKPD</button>
+      <button class="btn btn-hero-dark" onclick="openSumatifModal()">🎯 Terbitkan Sumatif</button>
+    `;
+  }
+}
+
+function switchView(viewId) {
+  currentView = viewId;
+  document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('view-' + viewId)?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === viewId));
+  toggleMobileSidebar(false);
+
+  if (viewId === 'analytics') initAnalyticsView();
+  if (viewId === 'student-report') loadStudentHistory(false);
+  if (viewId === 'admin-subjects') renderAdminSubjectsTable();
+}
+
+function handleGlobalSearch() {
+  searchQuery = document.getElementById('globalSearch').value.trim().toLowerCase();
+  renderLkpdCatalog();
+  renderSumatifCatalog();
+  if (currentUser && currentUser.role !== 'Siswa') renderMonitoringTables();
+}
+
+async function refreshPortalData(notify = false) {
   try {
-    let res = await fetch(ENDPOINT, {
+    const res = await fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action: 'getPortalData', token: authToken })
     });
-    let result = await res.json();
-    if (result.status === 'success') {
-      katalogLKPD = result.katalog || [];
-      rawSubmissions = result.submissions || [];
-      groupSubmissionRows();
-      renderStats();
-      renderSubjectCards();
-      if (currentUser.role !== 'Siswa') {
-        renderSubmissionsTable();
-      }
-      if (currentUser.role === 'Kepala Sekolah') {
-        renderKepsekAnalytics();
-      }
+    const result = await res.json();
+    if (result.status !== 'success') {
+      return showToast('Gagal memuat data portal: ' + (result.message || ''), 'err');
     }
-  } catch (e) {
-    console.error("Gagal memuat data portal:", e);
+
+    permissions      = result.permissions || permissions;
+    subjectsList     = result.subjects || [];
+    allSubjectsAdmin = result.allSubjects || subjectsList;
+    katalogLKPD      = result.katalogLKPD || result.katalog || [];
+    katalogSumatif   = result.katalogSumatif || [];
+    rawLkpdSubs      = result.lkpdSubmissions || result.submissions || [];
+    sumatifSubs      = (result.sumatifSubmissions || []).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    groupLkpdSubmissions();
+    populateAllFilters();
+    renderDashboard();
+    renderLkpdCatalog();
+    renderSumatifCatalog();
+    if (currentUser.role !== 'Siswa') renderMonitoringTables();
+    if (currentUser.role === 'Admin') renderAdminSubjectsTable();
+    if (notify) showToast('✅ Data portal berhasil disegarkan!');
+  } catch (err) {
+    console.error(err);
+    showToast('⚠️ Koneksi bermasalah saat memuat data.', 'err');
   }
 }
 
-function groupSubmissionRows() {
-  let map = {};
-  rawSubmissions.forEach(item => {
+function groupLkpdSubmissions() {
+  const map = {};
+  rawLkpdSubs.forEach(item => {
     if (!map[item.submissionId]) {
       map[item.submissionId] = {
         timestamp: item.timestamp,
         submissionId: item.submissionId,
         subject: item.subject,
         lkpdId: item.lkpdId,
+        kelas: item.kelas || '',
         status: item.status,
         grade: item.grade,
         members: [],
@@ -658,226 +1416,186 @@ function groupSubmissionRows() {
     map[item.submissionId].members.push(item.nama);
     map[item.submissionId].nisns.push(String(item.nisn));
   });
-  groupedSubmissions = Object.values(map).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  groupedLkpdSubs = Object.values(map).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 }
 
-// ================= 4. RENDER STATISTIK PER ROLE =================
-function renderStats() {
-  const box = document.getElementById("statsContainer");
+function populateAllFilters() {
+  const classes = permissions.allowedClasses || ['Kelas 1','Kelas 2','Kelas 3','Kelas 4','Kelas 5','Kelas 6'];
+  const classOptions = (classes.length > 1 ? `<option value="ALL">Semua Kelas</option>` : '') +
+    classes.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join('');
 
-  if (currentUser.role === 'Siswa') {
-    let mySubs = rawSubmissions.filter(s => String(s.nisn) === String(currentUser.username));
-    let doneCount = mySubs.length;
-    let gradedCount = mySubs.filter(s => s.status === 'Sudah Dinilai').length;
-
-    box.innerHTML = `
-      <div class="stat-card" style="border-left-color:#0284c7">
-        <div class="stat-info"><span>Total Misi Tersedia</span><strong>${katalogLKPD.length}</strong></div>
-        <div class="stat-icon">📚</div>
-      </div>
-      <div class="stat-card" style="border-left-color:#0d9488">
-        <div class="stat-info"><span>Misi Selesai Dikerjakan</span><strong>${doneCount}</strong></div>
-        <div class="stat-icon" style="background:#ccfbf1">✅</div>
-      </div>
-      <div class="stat-card" style="border-left-color:#f59e0b">
-        <div class="stat-info"><span>Sudah Dinilai Guru</span><strong>${gradedCount}</strong></div>
-        <div class="stat-icon" style="background:#fef3c7">⭐</div>
-      </div>
-    `;
-  } else {
-    let totalGroup = groupedSubmissions.length;
-    let pendingGroup = groupedSubmissions.filter(g => g.status === 'Belum Dinilai').length;
-    let doneGroup = groupedSubmissions.filter(g => g.status === 'Sudah Dinilai').length;
-
-    box.innerHTML = `
-      <div class="stat-card" style="border-left-color:#7c3aed">
-        <div class="stat-info"><span>Total LKPD Terbit</span><strong>${katalogLKPD.length}</strong></div>
-        <div class="stat-icon" style="background:#ede9fe">🗂️</div>
-      </div>
-      <div class="stat-card" style="border-left-color:#0284c7">
-        <div class="stat-info"><span>Total Pengiriman Kelompok</span><strong>${totalGroup}</strong></div>
-        <div class="stat-icon">👥</div>
-      </div>
-      <div class="stat-card" style="border-left-color:#f59e0b">
-        <div class="stat-info"><span>Menunggu Dinilai</span><strong style="color:#d97706">${pendingGroup}</strong></div>
-        <div class="stat-icon" style="background:#fef3c7">⏳</div>
-      </div>
-      <div class="stat-card" style="border-left-color:#10b981">
-        <div class="stat-info"><span>Sudah Dinilai</span><strong style="color:#059669">${doneGroup}</strong></div>
-        <div class="stat-icon" style="background:#d1fae5">🏆</div>
-      </div>
-    `;
-  }
-}
-
-// ================= 5. RENDER KARTU LKPD 7 MATA PELAJARAN =================
-function selectSubject(subId, btnEl) {
-  selectedSubject = subId;
-  document.querySelectorAll('.sub-pill').forEach(b => b.classList.remove('active'));
-  btnEl.classList.add('active');
-  renderSubjectCards();
-}
-
-function renderSubjectCards() {
-  const grid = document.getElementById("cardsGrid");
-  let filtered = selectedSubject === 'ALL'
-    ? katalogLKPD
-    : katalogLKPD.filter(k => k.subject.toLowerCase() === selectedSubject.toLowerCase());
-
-  document.getElementById("cardCountInfo").innerText =
-    `Menampilkan ${filtered.length} Lembar Kerja (${selectedSubject === 'ALL' ? 'Semua Mapel' : selectedSubject})`;
-
-  if (filtered.length === 0) {
-    grid.innerHTML = `
-      <div style="grid-column:1/-1; background:#fff; border-radius:20px; padding:36px; text-align:center; border:2px dashed #cbd5e1;">
-        <div style="font-size:44px; margin-bottom:8px;">📭</div>
-        <h4 style="font-size:17px;">Belum Ada Lembar Kerja pada Mata Pelajaran Ini</h4>
-        <p style="color:#64748b; font-size:14px; margin-top:4px;">
-          ${currentUser.role === 'Siswa' ? 'Tunggu Bapak/Ibu Guru mengirimkan misi baru ya!' : 'Klik tombol "+ Kirim / Input Link LKPD" di atas untuk menambahkan lembar kerja baru.'}
-        </p>
-      </div>
-    `;
-    return;
-  }
-
-  grid.innerHTML = filtered.map(item => {
-    let subMeta = SUBJECTS.find(s => s.id.toLowerCase() === item.subject.toLowerCase()) || SUBJECTS[0];
-
-    if (currentUser.role === 'Siswa') {
-      let mySub = rawSubmissions.find(s => s.lkpdId === item.lkpdId && String(s.nisn) === String(currentUser.username));
-      let statusHTML = '';
-      let actionHTML = '';
-
-      if (!mySub) {
-        statusHTML = `<span class="badge-status st-pending">🎯 Tugas Baru</span>`;
-        actionHTML = `<a href="${item.url}" target="_blank" class="btn-card btn-primary">🚀 Kerjakan Misi</a>`;
-      } else if (mySub.status === 'Sudah Dinilai') {
-        statusHTML = `<span class="badge-status st-done">⭐ Nilai: ${mySub.grade}</span>`;
-        actionHTML = `<a href="${item.url}?view=siswa&submissionId=${mySub.submissionId}" target="_blank" class="btn-card btn-emerald">🔍 Lihat Nilai & Catatan</a>`;
-      } else {
-        statusHTML = `<span class="badge-status st-pending">⏳ Menunggu Dinilai Guru</span>`;
-        actionHTML = `<a href="${item.url}?view=siswa&submissionId=${mySub.submissionId}" target="_blank" class="btn-card btn-soft">📄 Lihat Jawabanmu</a>`;
-      }
-
-      return `
-        <div class="lkpd-card">
-          <div>
-            <div class="card-top">
-              <span class="sub-tag" style="background:${subMeta.bg}; color:${subMeta.color}">${subMeta.icon} ${item.subject}</span>
-              ${statusHTML}
-            </div>
-            <h4>${item.title}</h4>
-            <p>${item.description || 'Kerjakan lembar kerja ini dengan teliti bersama kelompokmu.'}</p>
-          </div>
-          <div>
-            <div class="card-meta">
-              <span>👨‍🏫 ${item.teacher || 'Guru Kelas'}</span>
-              <span>📌 ${item.kelas || 'Kelas'}</span>
-            </div>
-            <div class="card-actions">${actionHTML}</div>
-          </div>
-        </div>
-      `;
-    }
-
-    let countGroup = groupedSubmissions.filter(g => g.lkpdId === item.lkpdId).length;
-    return `
-      <div class="lkpd-card">
-        <div>
-          <div class="card-top">
-            <span class="sub-tag" style="background:${subMeta.bg}; color:${subMeta.color}">${subMeta.icon} ${item.subject}</span>
-            <span class="code-tag">${item.lkpdId}</span>
-          </div>
-          <h4>${item.title}</h4>
-          <p>${item.description || 'Lembar kerja digital interaktif.'}</p>
-        </div>
-        <div>
-          <div class="card-meta">
-            <span>👥 ${countGroup} Kelompok Mengumpulkan</span>
-            <span>👨‍🏫 ${item.teacher}</span>
-          </div>
-          <div class="card-actions">
-            <a href="${item.url}" target="_blank" class="btn-card btn-soft">🔗 Buka LKPD</a>
-            <button class="btn-card btn-primary" onclick="filterTableByLKPD('${item.subject}')">📋 Periksa Kiriman</button>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-// ================= 6. TABEL MONITORING PENGUMPULAN =================
-function filterTableByLKPD(subjectName) {
-  document.getElementById("tableSubFilter").value = subjectName;
-  renderSubmissionsTable();
-  document.getElementById("submissionsPanel").scrollIntoView({ behavior: 'smooth' });
-}
-
-function renderSubmissionsTable() {
-  const tbody = document.getElementById("submissionsTableBody");
-  const subFilter = document.getElementById("tableSubFilter").value;
-  const stFilter = document.getElementById("tableStatusFilter").value;
-
-  let list = groupedSubmissions.filter(item => {
-    let passSub = (subFilter === 'ALL' || item.subject.toLowerCase() === subFilter.toLowerCase());
-    let passSt = (stFilter === 'ALL' || item.status === stFilter);
-    return passSub && passSt;
+  ['lkpdClassFilter', 'sumatifClassFilter', 'monClassFilter', 'anClassSel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = classOptions;
   });
 
-  if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#64748b; font-weight:700;">Belum ada data pengumpulan kelompok yang sesuai filter.</td></tr>`;
-    return;
+  const subOptions = `<option value="ALL">Semua Mata Pelajaran</option>` +
+    subjectsList.map(s => `<option value="${escHtml(s.name)}">${escHtml(s.icon)} ${escHtml(s.name)}</option>`).join('');
+  const monSubEl = document.getElementById('monSubjectFilter');
+  if (monSubEl) monSubEl.innerHTML = subOptions;
+
+  // Pills Mata Pelajaran untuk LKPD & Sumatif
+  const renderPills = (targetId, activeVal, fnName) => {
+    const box = document.getElementById(targetId);
+    if (!box) return;
+    const allBtn = `<button class="sub-pill ${activeVal === 'ALL' ? 'active' : ''}" onclick="${fnName}('ALL')">🌈 Semua Mapel</button>`;
+    const items = subjectsList.map(s => `
+      <button class="sub-pill ${activeVal === s.name ? 'active' : ''}" onclick="${fnName}('${escHtml(s.name)}')">
+        ${escHtml(s.icon)} ${escHtml(s.name)}
+      </button>
+    `).join('');
+    box.innerHTML = allBtn + items;
+  };
+  renderPills('lkpdSubjectPills', selLkpdSub, 'selectLkpdSubject');
+  renderPills('sumatifSubjectPills', selSumatifSub, 'selectSumatifSubject');
+
+  // Pending badge di sidebar
+  const pendingLkpd = groupedLkpdSubs.filter(g => g.status !== 'Sudah Dinilai').length;
+  const pendingSum  = sumatifSubs.filter(s => s.status !== 'Sudah Dinilai').length;
+  const totalPending = pendingLkpd + pendingSum;
+  const navBadge = document.getElementById('navPendingBadge');
+  if (navBadge) {
+    navBadge.style.display = totalPending > 0 ? 'inline-block' : 'none';
+    navBadge.textContent = totalPending;
   }
+}
 
-  tbody.innerHTML = list.map(item => {
-    let d = new Date(item.timestamp);
-    let dateStr = isNaN(d) ? '-' : d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-    let stBadge = item.status === 'Sudah Dinilai'
-      ? `<span class="badge-status st-done">✅ Sudah Dinilai (${item.grade})</span>`
-      : `<span class="badge-status st-pending">⏳ Menunggu Dinilai</span>`;
+// =========================================================================
+// 3. RENDER DASBOR UTAMA
+// =========================================================================
+function renderDashboard() {
+  const kpi = document.getElementById('dashboardKpiGrid');
+  const recentTitle = document.getElementById('recentPanelTitle');
+  const recentAct   = document.getElementById('recentPanelAction');
+  const recentBody  = document.getElementById('recentPanelBody');
 
-    let btnLabel = currentUser.role === 'Kepala Sekolah' ? '🔍 Supervisi' : (item.status === 'Sudah Dinilai' ? '🔍 Lihat Arsip' : '📝 Beri Nilai');
-    let viewRole = currentUser.role === 'Kepala Sekolah' ? 'siswa' : 'guru';
+  if (currentUser.role === 'Siswa') {
+    const myLkpdDone = rawLkpdSubs.length;
+    const mySumDone  = sumatifSubs.length;
+    const mySumGraded = sumatifSubs.filter(s => s.status === 'Sudah Dinilai');
+    const avgScore = mySumGraded.length
+      ? Math.round(mySumGraded.reduce((a, b) => a + parseNumericScore(b.finalScore), 0) / mySumGraded.length)
+      : 0;
 
-    return `
-      <tr>
-        <td><b>${dateStr}</b><br><small style="color:#94a3b8">ID: ${String(item.submissionId).slice(0,8)}</small></td>
-        <td><b>${item.subject}</b></td>
-        <td><b>${item.lkpdId}</b></td>
-        <td><b>${item.members.length} Siswa:</b><br><small style="color:#475569">• ${item.members.join('<br>• ')}</small></td>
-        <td>${stBadge}</td>
-        <td>
-          <button class="btn-card btn-primary" style="padding:8px 14px; font-size:13px;" onclick="openSubmissionReview('${item.lkpdId}', '${item.submissionId}', '${viewRole}')">
-            ${btnLabel}
-          </button>
-        </td>
-      </tr>
+    kpi.innerHTML = `
+      <div class="kpi-card" style="border-left-color:var(--primary)">
+        <div><span>Misi LKPD Tersedia</span><strong>${katalogLKPD.length}</strong><small>${myLkpdDone} selesai dikerjakan</small></div>
+        <div class="kpi-icon" style="background:var(--primary-soft)">📝</div>
+      </div>
+      <div class="kpi-card" style="border-left-color:var(--emerald)">
+        <div><span>Asesmen Sumatif</span><strong>${katalogSumatif.length}</strong><small>${mySumDone} sudah diikuti</small></div>
+        <div class="kpi-icon" style="background:var(--emerald-soft)">🎯</div>
+      </div>
+      <div class="kpi-card" style="border-left-color:var(--amber)">
+        <div><span>Rata-rata Sumatif</span><strong>${mySumGraded.length ? avgScore : '-'}</strong><small>${mySumGraded.length} nilai tervalidasi</small></div>
+        <div class="kpi-icon" style="background:var(--amber-soft)">🏆</div>
+      </div>
     `;
-  }).join('');
-}
 
-function openSubmissionReview(lkpdId, subId, viewRole) {
-  let found = katalogLKPD.find(k => k.lkpdId === lkpdId);
-  if (!found || !found.url) {
-    return alert(`Tautan URL untuk LKPD "${lkpdId}" belum terdaftar di Katalog.`);
+    recentTitle.textContent = '🚀 Lanjutkan Misi Belajar Terbaru';
+    recentAct.innerHTML = `<button class="btn btn-soft btn-sm" onclick="switchView('sumatif')">Lihat Semua Sumatif</button>`;
+
+    const pendingMissions = [
+      ...katalogSumatif.filter(s => !sumatifSubs.some(x => x.sumatifId === s.sumatifId)).map(s => ({
+        kind: 'Sumatif', subject: s.subject, title: s.title, url: s.url, badge: '🎯 Asesmen Sumatif'
+      })),
+      ...katalogLKPD.filter(k => !rawLkpdSubs.some(x => x.lkpdId === k.lkpdId)).map(k => ({
+        kind: 'LKPD', subject: k.subject, title: k.title, url: k.url, badge: '📝 LKPD'
+      }))
+    ].slice(0, 6);
+
+    if (!pendingMissions.length) {
+      recentBody.innerHTML = `<p style="color:var(--emerald);font-weight:800;">🎉 Hebat! Semua misi LKPD dan Asesmen Sumatif yang tersedia sudah kamu kerjakan.</p>`;
+    } else {
+      recentBody.innerHTML = `<div class="cards-grid" style="margin-bottom:0;">` + pendingMissions.map(m => `
+        <div class="item-card" style="padding:16px;">
+          <div>
+            <div class="card-head">
+              <span class="tag-pill" style="background:var(--primary-soft);color:var(--primary-dark)">${escHtml(m.badge)}</span>
+              <span class="code-pill">${escHtml(m.subject)}</span>
+            </div>
+            <h4 style="font-size:15px;">${escHtml(m.title)}</h4>
+          </div>
+          <a href="${escHtml(m.url)}" target="_blank" class="btn ${m.kind === 'Sumatif' ? 'btn-emerald' : 'btn-primary'}" style="margin-top:10px;">🚀 Kerjakan Sekarang</a>
+        </div>
+      `).join('') + `</div>`;
+    }
+  } else {
+    const pendingLkpd = groupedLkpdSubs.filter(g => g.status !== 'Sudah Dinilai').length;
+    const pendingSum  = sumatifSubs.filter(s => s.status !== 'Sudah Dinilai').length;
+    const tuntasSum   = sumatifSubs.filter(s => s.statusKktp === 'Tuntas').length;
+    const pctTuntas   = sumatifSubs.length ? Math.round((tuntasSum / sumatifSubs.length) * 100) : 0;
+
+    kpi.innerHTML = `
+      <div class="kpi-card" style="border-left-color:var(--primary)">
+        <div><span>Katalog Aktif</span><strong>${katalogLKPD.length + katalogSumatif.length}</strong><small>${katalogLKPD.length} LKPD • ${katalogSumatif.length} Sumatif</small></div>
+        <div class="kpi-icon" style="background:var(--primary-soft)">🗂️</div>
+      </div>
+      <div class="kpi-card" style="border-left-color:var(--amber)">
+        <div><span>Antrean Koreksi</span><strong style="color:var(--amber)">${pendingLkpd + pendingSum}</strong><small>${pendingSum} Sumatif • ${pendingLkpd} LKPD</small></div>
+        <div class="kpi-icon" style="background:var(--amber-soft)">⏳</div>
+      </div>
+      <div class="kpi-card" style="border-left-color:var(--emerald)">
+        <div><span>Ketuntasan Sumatif</span><strong style="color:var(--emerald)">${pctTuntas}%</strong><small>${tuntasSum} dari ${sumatifSubs.length} tuntas KKTP</small></div>
+        <div class="kpi-icon" style="background:var(--emerald-soft)">🎯</div>
+      </div>
+      <div class="kpi-card" style="border-left-color:var(--purple)">
+        <div><span>Total Kiriman</span><strong>${groupedLkpdSubs.length + sumatifSubs.length}</strong><small>Rekam jejak evaluasi</small></div>
+        <div class="kpi-icon" style="background:var(--purple-soft)">📊</div>
+      </div>
+    `;
+
+    if (currentUser.role === 'Admin' || currentUser.role === 'Kepala Sekolah') {
+      renderExecutiveOverview();
+    }
+
+    recentTitle.textContent = '⏳ Antrean Validasi & Koreksi Terbaru';
+    recentAct.innerHTML = `<button class="btn btn-primary btn-sm" onclick="switchView('monitoring')">Buka Semua Antrean</button>`;
+
+    const pendingItems = [
+      ...sumatifSubs.filter(s => s.status !== 'Sudah Dinilai').slice(0, 5).map(s => ({
+        time: s.timestamp, type: 'Sumatif', who: `${s.nama} (${s.kelas || '-'})`,
+        title: `${s.subject} — ${s.examTitle}`,
+        onClick: `openSumatifReview('${escHtml(s.sumatifId)}','${escHtml(s.submissionId)}')`
+      })),
+      ...groupedLkpdSubs.filter(g => g.status !== 'Sudah Dinilai').slice(0, 5).map(g => ({
+        time: g.timestamp, type: 'LKPD', who: `${g.members.length} Siswa (${g.members[0]}...)`,
+        title: `${g.subject} — ${g.lkpdId}`,
+        onClick: `openLkpdReview('${escHtml(g.lkpdId)}','${escHtml(g.submissionId)}')`
+      }))
+    ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 6);
+
+    if (!pendingItems.length) {
+      recentBody.innerHTML = `<p style="color:var(--emerald);font-weight:800;">✅ Tidak ada antrean koreksi yang tertunda saat ini.</p>`;
+    } else {
+      recentBody.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Waktu</th><th>Jenis</th><th>Siswa / Kelompok</th><th>Materi</th><th>Aksi</th></tr></thead><tbody>` +
+        pendingItems.map(it => `
+          <tr>
+            <td><b>${formatDateTime(it.time)}</b></td>
+            <td><span class="badge-st ${it.type === 'Sumatif' ? 'st-info' : 'st-wait'}">${it.type}</span></td>
+            <td><b>${escHtml(it.who)}</b></td>
+            <td>${escHtml(it.title)}</td>
+            <td><button class="btn btn-primary btn-sm" onclick="${it.onClick}">📝 Periksa</button></td>
+          </tr>
+        `).join('') + `</tbody></table></div>`;
+    }
   }
-  window.open(`${found.url}?view=${viewRole}&submissionId=${subId}`, "_blank");
 }
 
-// ================= 7. PANEL ANALITIK KEPALA SEKOLAH =================
-function renderKepsekAnalytics() {
-  const barBox = document.getElementById("kepsekBars");
-  let subjectsOnly = SUBJECTS.filter(s => s.id !== 'ALL');
-
-  barBox.innerHTML = subjectsOnly.map(s => {
-    let countLKPD = katalogLKPD.filter(k => k.subject.toLowerCase() === s.id.toLowerCase()).length;
-    let countSubs = groupedSubmissions.filter(g => g.subject.toLowerCase() === s.id.toLowerCase()).length;
-    let pct = Math.min(100, countLKPD * 25);
+function renderExecutiveOverview() {
+  const box = document.getElementById('execSubjectBars');
+  const activeSubs = allSubjectsAdmin.filter(s => s.status !== 'Nonaktif');
+  box.innerHTML = activeSubs.map(s => {
+    const cLkpd = katalogLKPD.filter(k => k.subject.toLowerCase() === s.name.toLowerCase()).length;
+    const cSum  = katalogSumatif.filter(k => k.subject.toLowerCase() === s.name.toLowerCase()).length;
+    const sSubs = sumatifSubs.filter(x => x.subject.toLowerCase() === s.name.toLowerCase());
+    const tuntas = sSubs.filter(x => x.statusKktp === 'Tuntas').length;
+    const pct = sSubs.length ? Math.round((tuntas / sSubs.length) * 100) : Math.min(100, (cLkpd + cSum) * 20);
     return `
       <div class="bar-row">
         <div class="bar-label">
-          <span>${s.icon} ${s.name}</span>
-          <span style="color:var(--primary-dark)">${countLKPD} LKPD • ${countSubs} Kiriman</span>
+          <span>${escHtml(s.icon)} ${escHtml(s.name)}</span>
+          <span style="color:var(--primary)">${cLkpd} LKPD • ${cSum} Sumatif${sSubs.length ? ` • ${pct}% Tuntas` : ''}</span>
         </div>
         <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
       </div>
@@ -885,51 +1603,1079 @@ function renderKepsekAnalytics() {
   }).join('');
 }
 
-// ================= 8. MODAL PUBLISH LKPD (GURU) =================
-function openPublishModal() {
-  document.getElementById("publishModal").style.display = "grid";
-}
-function closePublishModal() {
-  document.getElementById("publishModal").style.display = "none";
+// =========================================================================
+// 4. KATALOG LKPD (FORMATIF V4.2 — FULL CRUD)
+// =========================================================================
+function selectLkpdSubject(sub) {
+  selLkpdSub = sub;
+  populateAllFilters();
+  renderLkpdCatalog();
 }
 
-async function submitNewLKPD(e) {
+function renderLkpdCatalog() {
+  const grid = document.getElementById('lkpdCardsGrid');
+  const clsFilt = document.getElementById('lkpdClassFilter')?.value || 'ALL';
+
+  const filtered = katalogLKPD.filter(k => {
+    const passSub = selLkpdSub === 'ALL' || k.subject.toLowerCase() === selLkpdSub.toLowerCase();
+    const passCls = clsFilt === 'ALL' || k.kelas === clsFilt;
+    const passQ   = !searchQuery || (k.title + ' ' + k.lkpdId + ' ' + k.subject + ' ' + k.description).toLowerCase().includes(searchQuery);
+    return passSub && passCls && passQ;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="em-icon">📭</div><h4>Belum Ada LKPD</h4><p>Tidak ditemukan lembar kerja pada filter yang dipilih.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(item => {
+    const sm = getSubjectMeta(item.subject);
+    if (currentUser.role === 'Siswa') {
+      const mySub = rawLkpdSubs.find(s => s.lkpdId === item.lkpdId);
+      let badge = `<span class="badge-st st-wait">🎯 Tugas Baru</span>`;
+      let act   = `<a href="${escHtml(item.url)}" target="_blank" class="btn btn-primary" style="flex:1">🚀 Kerjakan Misi</a>`;
+      if (mySub && mySub.status === 'Sudah Dinilai') {
+        badge = `<span class="badge-st st-done">⭐ Nilai: ${escHtml(mySub.grade)}</span>`;
+        act   = `<a href="${escHtml(item.url)}?view=siswa&submissionId=${encodeURIComponent(mySub.submissionId)}" target="_blank" class="btn btn-emerald" style="flex:1">🔍 Lihat Nilai &amp; Catatan</a>`;
+      } else if (mySub) {
+        badge = `<span class="badge-st st-info">⏳ Menunggu Dinilai</span>`;
+        act   = `<a href="${escHtml(item.url)}?view=siswa&submissionId=${encodeURIComponent(mySub.submissionId)}" target="_blank" class="btn btn-soft" style="flex:1">📄 Lihat Jawaban</a>`;
+      }
+      return `
+        <div class="item-card">
+          <div>
+            <div class="card-head">
+              <span class="tag-pill" style="background:${sm.bg};color:${sm.color}">${escHtml(sm.icon)} ${escHtml(item.subject)}</span>
+              ${badge}
+            </div>
+            <h4>${escHtml(item.title)}</h4>
+            <p>${escHtml(item.description || 'Kerjakan lembar kerja ini secara teliti bersama kelompokmu.')}</p>
+          </div>
+          <div>
+            <div class="card-meta"><span>👨‍🏫 ${escHtml(item.teacher || 'Guru')}</span><span>📌 ${escHtml(item.kelas)}</span></div>
+            <div class="card-actions">${act}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    const cntGroup = groupedLkpdSubs.filter(g => g.lkpdId === item.lkpdId).length;
+    const crudBtns = canEditCatalog() ? `
+      <button class="btn btn-soft btn-sm" onclick="openLkpdModal('${escHtml(item.lkpdId)}')" title="Edit LKPD">✏️ Edit</button>
+      <button class="btn btn-rose btn-sm" onclick="confirmDeleteLkpd('${escHtml(item.lkpdId)}','${escHtml(item.title)}')" title="Hapus LKPD">🗑️</button>
+    ` : '';
+
+    return `
+      <div class="item-card">
+        <div>
+          <div class="card-head">
+            <span class="tag-pill" style="background:${sm.bg};color:${sm.color}">${escHtml(sm.icon)} ${escHtml(item.subject)}</span>
+            <span class="code-pill">${escHtml(item.kelas)} • ${escHtml(item.lkpdId)}</span>
+          </div>
+          <h4>${escHtml(item.title)}</h4>
+          <p>${escHtml(item.description || 'Lembar kerja digital interaktif.')}</p>
+        </div>
+        <div>
+          <div class="card-meta"><span>👥 ${cntGroup} Kelompok Mengirim</span><span>👨‍🏫 ${escHtml(item.teacher)}</span></div>
+          <div class="card-actions">
+            <a href="${escHtml(item.url)}" target="_blank" class="btn btn-soft btn-sm" style="flex:1">🔗 Buka</a>
+            <button class="btn btn-primary btn-sm" style="flex:1" onclick="jumpToMonitoring('lkpd','${escHtml(item.subject)}')">📋 Kiriman</button>
+            ${crudBtns}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function syncSubjectSelectByClass(classSelId, subSelId, preselectSubject = '') {
+  const chosenClass = document.getElementById(classSelId).value;
+  const subSel = document.getElementById(subSelId);
+  const eligible = subjectsList.filter(s => !chosenClass || s.kelasList.includes(chosenClass));
+  subSel.innerHTML = eligible.map(s => `<option value="${escHtml(s.name)}">${escHtml(s.icon)} ${escHtml(s.name)}</option>`).join('');
+  if (preselectSubject && eligible.some(s => s.name === preselectSubject)) {
+    subSel.value = preselectSubject;
+  }
+}
+
+function openLkpdModal(editId = '') {
+  const classes = permissions.allowedClasses || ['Kelas 4'];
+  const clsSel = document.getElementById('lkpdKelas');
+  clsSel.innerHTML = classes.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join('');
+
+  if (editId) {
+    const item = katalogLKPD.find(k => k.lkpdId === editId);
+    if (!item) return;
+    document.getElementById('lkpdModalTitle').textContent = '✏️ Edit Katalog LKPD';
+    document.getElementById('lkpdOldId').value = item.lkpdId;
+    clsSel.value = classes.includes(item.kelas) ? item.kelas : classes[0];
+    syncSubjectSelectByClass('lkpdKelas', 'lkpdSubject', item.subject);
+    document.getElementById('lkpdId').value    = item.lkpdId;
+    document.getElementById('lkpdTitle').value = item.title;
+    document.getElementById('lkpdUrl').value   = item.url;
+    document.getElementById('lkpdDesc').value  = item.description;
+  } else {
+    document.getElementById('lkpdModalTitle').textContent = '📤 Tambah LKPD Baru';
+    document.getElementById('lkpdOldId').value = '';
+    syncSubjectSelectByClass('lkpdKelas', 'lkpdSubject');
+    document.getElementById('lkpdId').value    = '';
+    document.getElementById('lkpdTitle').value = '';
+    document.getElementById('lkpdUrl').value   = '';
+    document.getElementById('lkpdDesc').value  = '';
+  }
+  openModal('lkpdModal');
+}
+
+async function submitLkpdForm(e) {
   e.preventDefault();
-  let btn = document.getElementById("btnSaveLKPD");
-  btn.disabled = true;
-  btn.innerText = "⏳ Menyimpan ke Database...";
+  const btn = document.getElementById('btnSaveLkpd');
+  const oldId = document.getElementById('lkpdOldId').value.trim();
+  btn.disabled = true; btn.textContent = '⏳ Menyimpan...';
 
-  let payload = {
-    action: 'publishLKPD',
+  const payload = {
+    action: oldId ? 'updateLKPD' : 'publishLKPD',
     token: authToken,
-    subject: document.getElementById("pubSubject").value,
-    lkpdId: document.getElementById("pubId").value.trim(),
-    title: document.getElementById("pubTitle").value.trim(),
-    url: document.getElementById("pubUrl").value.trim(),
-    description: document.getElementById("pubDesc").value.trim(),
-    kelas: 'Kelas 4'
+    oldLkpdId: oldId,
+    kelas: document.getElementById('lkpdKelas').value,
+    subject: document.getElementById('lkpdSubject').value,
+    lkpdId: document.getElementById('lkpdId').value.trim(),
+    title: document.getElementById('lkpdTitle').value.trim(),
+    url: document.getElementById('lkpdUrl').value.trim(),
+    description: document.getElementById('lkpdDesc').value.trim()
   };
 
   try {
-    let res = await fetch(ENDPOINT, {
+    const res = await fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload)
     });
-    let result = await res.json();
-    if (result.status === 'success') {
-      alert("✅ " + result.message);
-      closePublishModal();
+    const json = await res.json();
+    if (json.status === 'success') {
+      showToast('✅ ' + json.message);
+      closeModal('lkpdModal');
       await refreshPortalData();
     } else {
-      alert("⚠️ Gagal: " + result.message);
+      showToast('❌ ' + json.message, 'err');
     }
   } catch (err) {
-    alert("⚠️ Koneksi gagal saat menyimpan LKPD.");
+    showToast('⚠️ Gagal terhubung ke server.', 'err');
   } finally {
-    btn.disabled = false;
-    btn.innerText = "🚀 Terbitkan ke Siswa";
+    btn.disabled = false; btn.textContent = '💾 Simpan & Terbitkan';
   }
+}
+
+function confirmDeleteLkpd(lkpdId, title) {
+  askConfirm(
+    'Hapus LKPD dari Katalog?',
+    `LKPD "${title}" (${lkpdId}) akan dihapus dari daftar aktif. Riwayat nilai siswa yang sudah terekam tetap aman di database.`,
+    async () => {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'deleteLKPD', token: authToken, lkpdId })
+      });
+      const json = await res.json();
+      if (json.status === 'success') {
+        showToast('🗑️ ' + json.message);
+        await refreshPortalData();
+      } else {
+        showToast('❌ ' + json.message, 'err');
+      }
+    }
+  );
+}
+
+// =========================================================================
+// 5. KATALOG ASESMEN SUMATIF (V4.3 — FULL CRUD)
+// =========================================================================
+function selectSumatifSubject(sub) {
+  selSumatifSub = sub;
+  populateAllFilters();
+  renderSumatifCatalog();
+}
+
+function renderSumatifCatalog() {
+  const grid = document.getElementById('sumatifCardsGrid');
+  const clsFilt = document.getElementById('sumatifClassFilter')?.value || 'ALL';
+
+  const filtered = katalogSumatif.filter(s => {
+    const passSub = selSumatifSub === 'ALL' || s.subject.toLowerCase() === selSumatifSub.toLowerCase();
+    const passCls = clsFilt === 'ALL' || s.kelas === clsFilt;
+    const passQ   = !searchQuery || (s.title + ' ' + s.sumatifId + ' ' + s.subject + ' ' + s.description).toLowerCase().includes(searchQuery);
+    return passSub && passCls && passQ;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="em-icon">🎯</div><h4>Belum Ada Paket Sumatif</h4><p>${canEditCatalog() ? 'Klik tombol "+ Terbitkan Sumatif" untuk mendaftarkan file Asesmen Sumatif V4.3.' : 'Belum ada jadwal asesmen sumatif aktif saat ini.'}</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(item => {
+    const sm = getSubjectMeta(item.subject);
+    if (currentUser.role === 'Siswa') {
+      const mySub = sumatifSubs.find(x => x.sumatifId === item.sumatifId);
+      let badge = `<span class="badge-st st-wait">📝 Belum Dikerjakan</span>`;
+      let act   = `<a href="${escHtml(item.url)}" target="_blank" class="btn btn-emerald" style="flex:1">🚀 Mulai Asesmen</a>`;
+      if (mySub && mySub.status === 'Sudah Dinilai') {
+        const isPass = mySub.statusKktp === 'Tuntas';
+        badge = `<span class="badge-st ${isPass ? 'st-done' : 'st-bad'}">Nilai: ${escHtml(mySub.finalScore)} (${escHtml(mySub.statusKktp)})</span>`;
+        act   = `<a href="${escHtml(item.url)}?view=siswa&submissionId=${encodeURIComponent(mySub.submissionId)}" target="_blank" class="btn btn-primary" style="flex:1">📊 Lihat Grafik TP &amp; Pembahasan</a>`;
+      } else if (mySub) {
+        badge = `<span class="badge-st st-info">⏳ Menunggu Validasi Guru</span>`;
+        act   = `<a href="${escHtml(item.url)}?view=siswa&submissionId=${encodeURIComponent(mySub.submissionId)}" target="_blank" class="btn btn-soft" style="flex:1">📄 Lihat Hasil Sementara</a>`;
+      }
+      return `
+        <div class="item-card">
+          <div>
+            <div class="card-head">
+              <span class="tag-pill" style="background:${sm.bg};color:${sm.color}">${escHtml(sm.icon)} ${escHtml(item.subject)}</span>
+              ${badge}
+            </div>
+            <h4>${escHtml(item.title)}</h4>
+            <p>${escHtml(item.description || 'Kerjakan asesmen sumatif dengan jujur dan teliti.')}</p>
+          </div>
+          <div>
+            <div class="card-meta"><span>🎯 KKTP: ${item.kktp}</span><span>📌 ${escHtml(item.kelas)}</span></div>
+            <div class="card-actions">${act}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    const cntSub = sumatifSubs.filter(x => x.sumatifId === item.sumatifId).length;
+    const crudBtns = canEditCatalog() ? `
+      <button class="btn btn-soft btn-sm" onclick="openSumatifModal('${escHtml(item.sumatifId)}')" title="Edit Sumatif">✏️ Edit</button>
+      <button class="btn btn-rose btn-sm" onclick="confirmDeleteSumatif('${escHtml(item.sumatifId)}','${escHtml(item.title)}')" title="Hapus Sumatif">🗑️</button>
+    ` : '';
+
+    return `
+      <div class="item-card">
+        <div>
+          <div class="card-head">
+            <span class="tag-pill" style="background:${sm.bg};color:${sm.color}">${escHtml(sm.icon)} ${escHtml(item.subject)}</span>
+            <span class="code-pill">${escHtml(item.kelas)} • KKTP ${item.kktp}</span>
+          </div>
+          <h4>${escHtml(item.title)}</h4>
+          <p>${escHtml(item.description || 'Paket Asesmen Sumatif Digital V4.3.')}</p>
+        </div>
+        <div>
+          <div class="card-meta"><span>👨‍🎓 ${cntSub} Siswa Mengerjakan</span><span>🔑 ${escHtml(item.sumatifId)}</span></div>
+          <div class="card-actions">
+            <a href="${escHtml(item.url)}" target="_blank" class="btn btn-soft btn-sm">🔗 Buka</a>
+            <button class="btn btn-emerald btn-sm" style="flex:1" onclick="jumpToAnalytics('${escHtml(item.subject)}','${escHtml(item.sumatifId)}')">📈 Analitik</button>
+            ${crudBtns}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openSumatifModal(editId = '') {
+  const classes = permissions.allowedClasses || ['Kelas 4'];
+  const clsSel = document.getElementById('sumKelas');
+  clsSel.innerHTML = classes.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join('');
+
+  if (editId) {
+    const item = katalogSumatif.find(s => s.sumatifId === editId);
+    if (!item) return;
+    document.getElementById('sumatifModalTitle').textContent = '✏️ Edit Paket Asesmen Sumatif';
+    document.getElementById('sumOldId').value = item.sumatifId;
+    clsSel.value = classes.includes(item.kelas) ? item.kelas : classes[0];
+    syncSubjectSelectByClass('sumKelas', 'sumSubject', item.subject);
+    document.getElementById('sumId').value    = item.sumatifId;
+    document.getElementById('sumKktp').value  = item.kktp || 75;
+    document.getElementById('sumTitle').value = item.title;
+    document.getElementById('sumUrl').value   = item.url;
+    document.getElementById('sumDesc').value  = item.description;
+  } else {
+    document.getElementById('sumatifModalTitle').textContent = '🎯 Terbitkan Asesmen Sumatif Baru';
+    document.getElementById('sumOldId').value = '';
+    syncSubjectSelectByClass('sumKelas', 'sumSubject');
+    document.getElementById('sumId').value    = '';
+    document.getElementById('sumKktp').value  = 75;
+    document.getElementById('sumTitle').value = '';
+    document.getElementById('sumUrl').value   = '';
+    document.getElementById('sumDesc').value  = '';
+  }
+  openModal('sumatifModal');
+}
+
+async function submitSumatifForm(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btnSaveSumatif');
+  const oldId = document.getElementById('sumOldId').value.trim();
+  btn.disabled = true; btn.textContent = '⏳ Menyimpan...';
+
+  const payload = {
+    action: oldId ? 'updateSumatif' : 'publishSumatif',
+    token: authToken,
+    oldSumatifId: oldId,
+    kelas: document.getElementById('sumKelas').value,
+    subject: document.getElementById('sumSubject').value,
+    sumatifId: document.getElementById('sumId').value.trim(),
+    kktp: Number(document.getElementById('sumKktp').value || 75),
+    title: document.getElementById('sumTitle').value.trim(),
+    url: document.getElementById('sumUrl').value.trim(),
+    description: document.getElementById('sumDesc').value.trim()
+  };
+
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (json.status === 'success') {
+      showToast('✅ ' + json.message);
+      closeModal('sumatifModal');
+      await refreshPortalData();
+    } else {
+      showToast('❌ ' + json.message, 'err');
+    }
+  } catch (err) {
+    showToast('⚠️ Gagal terhubung ke server.', 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '🚀 Simpan & Terbitkan';
+  }
+}
+
+function confirmDeleteSumatif(sumatifId, title) {
+  askConfirm(
+    'Hapus Paket Sumatif?',
+    `Paket "${title}" (${sumatifId}) akan dihapus dari katalog aktif. Data nilai siswa dan analisis butir di spreadsheet tetap tersimpan aman.`,
+    async () => {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'deleteSumatif', token: authToken, sumatifId })
+      });
+      const json = await res.json();
+      if (json.status === 'success') {
+        showToast('🗑️ ' + json.message);
+        await refreshPortalData();
+      } else {
+        showToast('❌ ' + json.message, 'err');
+      }
+    }
+  );
+}
+
+// =========================================================================
+// 6. MONITORING & KOREKSI TERPADU (LKPD + SUMATIF + DELETE KIRIMAN)
+// =========================================================================
+function jumpToMonitoring(tab, subject) {
+  switchView('monitoring');
+  switchMonTab(tab);
+  if (subject) document.getElementById('monSubjectFilter').value = subject;
+  renderMonitoringTables();
+}
+
+function switchMonTab(tab) {
+  activeMonTab = tab;
+  document.getElementById('tabMonSumatif').classList.toggle('active', tab === 'sumatif');
+  document.getElementById('tabMonLkpd').classList.toggle('active', tab === 'lkpd');
+  document.getElementById('monSumatifBox').style.display = tab === 'sumatif' ? 'block' : 'none';
+  document.getElementById('monLkpdBox').style.display    = tab === 'lkpd' ? 'block' : 'none';
+}
+
+function renderMonitoringTables() {
+  const clsF = document.getElementById('monClassFilter')?.value || 'ALL';
+  const subF = document.getElementById('monSubjectFilter')?.value || 'ALL';
+  const stF  = document.getElementById('monStatusFilter')?.value || 'ALL';
+
+  // A. Sumatif Submissions
+  const listSum = sumatifSubs.filter(s => {
+    const pCls = clsF === 'ALL' || s.kelas === clsF;
+    const pSub = subF === 'ALL' || s.subject.toLowerCase() === subF.toLowerCase();
+    const pSt  = stF === 'ALL' || (stF === 'DONE' ? s.status === 'Sudah Dinilai' : s.status !== 'Sudah Dinilai');
+    const pQ   = !searchQuery || (s.nama + ' ' + s.nisn + ' ' + s.examTitle + ' ' + s.sumatifId + ' ' + s.subject).toLowerCase().includes(searchQuery);
+    return pCls && pSub && pSt && pQ;
+  });
+
+  document.getElementById('cntMonSum').textContent = listSum.length;
+  const sumBody = document.getElementById('monSumatifBody');
+  if (!listSum.length) {
+    sumBody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted);font-weight:700;">Belum ada kiriman asesmen sumatif sesuai filter.</td></tr>`;
+  } else {
+    sumBody.innerHTML = listSum.map(item => {
+      const isDone = item.status === 'Sudah Dinilai';
+      const isPass = item.statusKktp === 'Tuntas';
+      const btnLabel = currentUser.role === 'Kepala Sekolah' ? '🔍 Supervisi' : (isDone ? '👁️ Arsip' : '📝 Koreksi');
+      const delBtn = canEditCatalog()
+        ? `<button class="btn btn-rose btn-sm" onclick="confirmDeleteSumatifSub('${escHtml(item.subject)}','${escHtml(item.submissionId)}','${escHtml(item.nama)}')" title="Hapus kiriman duplikat">🗑️</button>`
+        : '';
+      return `
+        <tr>
+          <td><b>${formatDateTime(item.timestamp)}</b><br><small style="color:var(--muted)">ID: ${escHtml(item.submissionId.slice(0,8))}</small></td>
+          <td><b>${escHtml(item.nama)}</b><br><small style="color:var(--muted)">NISN: ${escHtml(item.nisn)} • ${escHtml(item.rombel || item.kelas)}</small></td>
+          <td><b>${escHtml(item.subject)}</b><br><small style="color:var(--muted)">${escHtml(item.examTitle)}</small></td>
+          <td><b>${escHtml(item.finalScore)}</b><br><span class="badge-st ${isPass ? 'st-done' : 'st-bad'}">${escHtml(item.statusKktp || '-')}</span></td>
+          <td><span class="badge-st ${isDone ? 'st-done' : 'st-wait'}">${isDone ? '✅ Sudah Dinilai' : '⏳ ' + escHtml(item.status)}</span></td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-primary btn-sm" onclick="openSumatifReview('${escHtml(item.sumatifId)}','${escHtml(item.submissionId)}')">${btnLabel}</button>
+              ${delBtn}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // B. LKPD Submissions
+  const listLkpd = groupedLkpdSubs.filter(g => {
+    const pCls = clsF === 'ALL' || !g.kelas || g.kelas === clsF;
+    const pSub = subF === 'ALL' || g.subject.toLowerCase() === subF.toLowerCase();
+    const pSt  = stF === 'ALL' || (stF === 'DONE' ? g.status === 'Sudah Dinilai' : g.status !== 'Sudah Dinilai');
+    const pQ   = !searchQuery || (g.members.join(' ') + ' ' + g.lkpdId + ' ' + g.subject).toLowerCase().includes(searchQuery);
+    return pCls && pSub && pSt && pQ;
+  });
+
+  document.getElementById('cntMonLkpd').textContent = listLkpd.length;
+  const lkpdBody = document.getElementById('monLkpdBody');
+  if (!listLkpd.length) {
+    lkpdBody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted);font-weight:700;">Belum ada kiriman kelompok LKPD sesuai filter.</td></tr>`;
+  } else {
+    lkpdBody.innerHTML = listLkpd.map(item => {
+      const isDone = item.status === 'Sudah Dinilai';
+      const btnLabel = currentUser.role === 'Kepala Sekolah' ? '🔍 Supervisi' : (isDone ? '👁️ Arsip' : '📝 Beri Nilai');
+      const delBtn = canEditCatalog()
+        ? `<button class="btn btn-rose btn-sm" onclick="confirmDeleteLkpdSub('${escHtml(item.lkpdId)}','${escHtml(item.submissionId)}')" title="Hapus kiriman duplikat">🗑️</button>`
+        : '';
+      return `
+        <tr>
+          <td><b>${formatDateTime(item.timestamp)}</b><br><small style="color:var(--muted)">ID: ${escHtml(item.submissionId.slice(0,8))}</small></td>
+          <td><b>${escHtml(item.subject)}</b><br><small style="color:var(--muted)">${escHtml(item.kelas || '-')}</small></td>
+          <td><b>${escHtml(item.lkpdId)}</b></td>
+          <td><b>${item.members.length} Siswa:</b><br><small style="color:var(--muted)">• ${item.members.map(escHtml).join('<br>• ')}</small></td>
+          <td><span class="badge-st ${isDone ? 'st-done' : 'st-wait'}">${isDone ? '✅ Sudah Dinilai (' + escHtml(item.grade) + ')' : '⏳ Menunggu Dinilai'}</span></td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-primary btn-sm" onclick="openLkpdReview('${escHtml(item.lkpdId)}','${escHtml(item.submissionId)}')">${btnLabel}</button>
+              ${delBtn}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+}
+
+function openLkpdReview(lkpdId, subId) {
+  const found = katalogLKPD.find(k => k.lkpdId === lkpdId);
+  if (!found || !found.url) return showToast(`⚠️ URL untuk LKPD "${lkpdId}" belum terdaftar di katalog.`, 'err');
+  const viewRole = currentUser.role === 'Kepala Sekolah' ? 'siswa' : 'guru';
+  window.open(`${found.url}?view=${viewRole}&submissionId=${encodeURIComponent(subId)}`, '_blank');
+}
+
+function openSumatifReview(sumatifId, subId) {
+  const found = katalogSumatif.find(s => s.sumatifId === sumatifId);
+  if (!found || !found.url) return showToast(`⚠️ URL paket Sumatif "${sumatifId}" belum didaftarkan di Katalog Sumatif.`, 'err');
+  const viewRole = currentUser.role === 'Kepala Sekolah' ? 'siswa' : 'guru';
+  window.open(`${found.url}?view=${viewRole}&submissionId=${encodeURIComponent(subId)}`, '_blank');
+}
+
+function confirmDeleteLkpdSub(lkpdId, submissionId) {
+  askConfirm(
+    'Hapus Kiriman LKPD?',
+    'Data kiriman kelompok ini akan dihapus permanen dari sheet LKPD dan MASTER_INDEX. Gunakan hanya untuk data uji coba atau kiriman ganda.',
+    async () => {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'deleteLKPDSubmission', token: authToken, lkpdId, submissionId })
+      });
+      const json = await res.json();
+      if (json.status === 'success') { showToast('🗑️ ' + json.message); await refreshPortalData(); }
+      else showToast('❌ ' + json.message, 'err');
+    }
+  );
+}
+
+function confirmDeleteSumatifSub(subject, submissionId, nama) {
+  askConfirm(
+    'Hapus Kiriman Sumatif?',
+    `Data kiriman sumatif atas nama ${nama} akan dihapus permanen dari sheet SUMATIF_${subject} dan MASTER_INDEX_SUMATIF.`,
+    async () => {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'deleteSumatifSubmission', token: authToken, subject, submissionId })
+      });
+      const json = await res.json();
+      if (json.status === 'success') {
+        analyticsCache = {};
+        showToast('🗑️ ' + json.message);
+        await refreshPortalData();
+      } else showToast('❌ ' + json.message, 'err');
+    }
+  );
+}
+
+// =========================================================================
+// 7. ANALITIK SUMATIF V4.3 (GRAFIK TP, MATRIKS SISWA & ANALISIS BUTIR)
+// =========================================================================
+function jumpToAnalytics(subject, sumatifId) {
+  switchView('analytics');
+  const subSel = document.getElementById('anSubjectSel');
+  if (subSel && [...subSel.options].some(o => o.value === subject)) {
+    subSel.value = subject;
+    onAnalyticsSubjectChange(sumatifId);
+  }
+}
+
+function initAnalyticsView() {
+  const subSel = document.getElementById('anSubjectSel');
+  if (!subSel.options.length) {
+    subSel.innerHTML = subjectsList.map(s => `<option value="${escHtml(s.name)}">${escHtml(s.icon)} ${escHtml(s.name)}</option>`).join('');
+    // Pilih mapel yang sudah punya kiriman sumatif jika ada
+    const firstWithData = subjectsList.find(s => sumatifSubs.some(x => x.subject.toLowerCase() === s.name.toLowerCase()));
+    if (firstWithData) subSel.value = firstWithData.name;
+  }
+  onAnalyticsSubjectChange();
+}
+
+function onAnalyticsSubjectChange(preselectPkg = '') {
+  const subject = document.getElementById('anSubjectSel').value;
+  const pkgSel  = document.getElementById('anPackageSel');
+
+  // Kumpulkan paket dari katalog dan dari kiriman aktual
+  const pkgMap = {};
+  katalogSumatif.filter(k => k.subject.toLowerCase() === subject.toLowerCase())
+    .forEach(k => { pkgMap[k.sumatifId] = { title: k.title, kktp: k.kktp }; });
+  sumatifSubs.filter(s => s.subject.toLowerCase() === subject.toLowerCase())
+    .forEach(s => { if (!pkgMap[s.sumatifId]) pkgMap[s.sumatifId] = { title: s.examTitle || s.sumatifId, kktp: 75 }; });
+
+  const keys = Object.keys(pkgMap);
+  if (!keys.length) {
+    pkgSel.innerHTML = `<option value="ALL">Semua Paket (${escHtml(subject)})</option>`;
+  } else {
+    pkgSel.innerHTML = keys.map(id => `<option value="${escHtml(id)}">${escHtml(pkgMap[id].title)} (${escHtml(id)})</option>`).join('');
+    if (preselectPkg && pkgMap[preselectPkg]) pkgSel.value = preselectPkg;
+  }
+  loadSumatifAnalyticsData(false);
+}
+
+function switchAnTab(tab) {
+  activeAnTab = tab;
+  document.getElementById('tabAnTp').classList.toggle('active', tab === 'tp');
+  document.getElementById('tabAnItem').classList.toggle('active', tab === 'items');
+  document.getElementById('anTpPanel').style.display   = tab === 'tp' ? 'block' : 'none';
+  document.getElementById('anItemPanel').style.display = tab === 'items' ? 'block' : 'none';
+}
+
+async function loadSumatifAnalyticsData(forceReload = false) {
+  const subject   = document.getElementById('anSubjectSel').value;
+  const sumatifId = document.getElementById('anPackageSel').value;
+  const kelas     = document.getElementById('anClassSel').value || 'ALL';
+  if (!subject) return;
+
+  const pkgMeta = katalogSumatif.find(k => k.sumatifId === sumatifId);
+  activeAnalyticsKktp = pkgMeta ? Number(pkgMeta.kktp || 75) : 75;
+  document.getElementById('anKktpLegend').textContent = `Garis Ambang KKTP: ${activeAnalyticsKktp}%`;
+
+  const cacheKey = `${subject}|${sumatifId}|${kelas}`;
+  if (!forceReload && analyticsCache[cacheKey]) {
+    activeAnalyticsRows = analyticsCache[cacheKey];
+    renderFullAnalytics();
+    return;
+  }
+
+  document.getElementById('analyticsLoader').style.display = 'block';
+  document.getElementById('analyticsContent').style.opacity = '0.4';
+
+  try {
+    const url = `${ENDPOINT}?action=getSumatifAnalytics&subject=${encodeURIComponent(subject)}&sumatifId=${encodeURIComponent(sumatifId)}&kelas=${encodeURIComponent(kelas)}`;
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.status === 'success') {
+      activeAnalyticsRows = json.data || [];
+      analyticsCache[cacheKey] = activeAnalyticsRows;
+      renderFullAnalytics();
+    } else {
+      showToast('❌ ' + (json.message || 'Gagal memuat analitik.'), 'err');
+    }
+  } catch (e) {
+    showToast('⚠️ Koneksi gagal saat memuat analitik.', 'err');
+  } finally {
+    document.getElementById('analyticsLoader').style.display = 'none';
+    document.getElementById('analyticsContent').style.opacity = '1';
+  }
+}
+
+function renderFullAnalytics() {
+  const rows = activeAnalyticsRows;
+  const kpiBox = document.getElementById('analyticsKpiGrid');
+
+  if (!rows.length) {
+    kpiBox.innerHTML = `<div class="empty-state"><div class="em-icon">📊</div><h4>Belum Ada Data Submisi Sumatif</h4><p>Belum ada siswa yang mengerjakan paket asesmen ini pada filter kelas yang dipilih.</p></div>`;
+    document.getElementById('anTpHighlights').innerHTML = '';
+    document.getElementById('anTpChartList').innerHTML = '<p style="color:var(--muted);font-weight:700;">Tidak ada data grafik TP.</p>';
+    document.getElementById('anTpMatrixHead').innerHTML = '';
+    document.getElementById('anTpMatrixBody').innerHTML = '';
+    document.getElementById('anHardestItems').innerHTML = '';
+    document.getElementById('anItemTableBody').innerHTML = '';
+    return;
+  }
+
+  const N = rows.length;
+  const avgScore = Math.round(rows.reduce((a, r) => a + Number(r.finalScore || 0), 0) / N);
+  const tuntasCnt = rows.filter(r => Number(r.finalScore || 0) >= activeAnalyticsKktp).length;
+  const avgViol = (rows.reduce((a, r) => a + Number(r.violations || 0), 0) / N).toFixed(1);
+
+  kpiBox.innerHTML = `
+    <div class="kpi-card" style="border-left-color:var(--primary)">
+      <div><span>Peserta Mengerjakan</span><strong>${N}</strong><small>Siswa tercatat</small></div>
+      <div class="kpi-icon" style="background:var(--primary-soft)">👨‍🎓</div>
+    </div>
+    <div class="kpi-card" style="border-left-color:var(--purple)">
+      <div><span>Rata-rata Nilai Kelas</span><strong>${avgScore}</strong><small>Skala 0 – 100</small></div>
+      <div class="kpi-icon" style="background:var(--purple-soft)">📏</div>
+    </div>
+    <div class="kpi-card" style="border-left-color:var(--emerald)">
+      <div><span>Ketuntasan KKTP (${activeAnalyticsKktp})</span><strong style="color:var(--emerald)">${Math.round((tuntasCnt/N)*100)}%</strong><small>${tuntasCnt} Tuntas • ${N - tuntasCnt} Perlu Bimbingan</small></div>
+      <div class="kpi-icon" style="background:var(--emerald-soft)">✅</div>
+    </div>
+    <div class="kpi-card" style="border-left-color:var(--amber)">
+      <div><span>Rata-rata Pindah Tab</span><strong>${avgViol}x</strong><small>Indikator fokus ujian</small></div>
+      <div class="kpi-icon" style="background:var(--amber-soft)">🛡️</div>
+    </div>
+  `;
+
+  computeAndRenderTpAnalytics(rows);
+  computeAndRenderItemAnalysis(rows);
+}
+
+function parseTpSummarySafe(rawJson) {
+  try {
+    const obj = JSON.parse(rawJson || '{}');
+    const out = {};
+    Object.keys(obj).forEach(k => {
+      const it = obj[k] || {};
+      const earned = Number(it.earned || 0);
+      const max    = Number(it.max || 0);
+      const pct    = (it.pct !== undefined && it.pct !== null)
+        ? Number(it.pct)
+        : (max > 0 ? Math.round((earned / max) * 100) : 0);
+      out[k] = { code: it.code || k, title: it.title || it.code || k, earned, max, pct };
+    });
+    return out;
+  } catch (e) { return {}; }
+}
+
+function computeAndRenderTpAnalytics(rows) {
+  const tpAgg = {};
+  const studentRows = [];
+
+  rows.forEach(r => {
+    const tpObj = parseTpSummarySafe(r.tpSummaryJson);
+    studentRows.push({ row: r, tpObj });
+    Object.keys(tpObj).forEach(code => {
+      const t = tpObj[code];
+      if (!tpAgg[code]) tpAgg[code] = { code, title: t.title, sumPct: 0, count: 0, passCount: 0 };
+      if (t.title && t.title !== code) tpAgg[code].title = t.title;
+      tpAgg[code].sumPct += t.pct;
+      tpAgg[code].count += 1;
+      if (t.pct >= activeAnalyticsKktp) tpAgg[code].passCount += 1;
+    });
+  });
+
+  const tpCodes = Object.keys(tpAgg).sort();
+  const tpStats = tpCodes.map(c => {
+    const st = tpAgg[c];
+    const avgPct = st.count ? Math.round(st.sumPct / st.count) : 0;
+    const passRate = st.count ? Math.round((st.passCount / st.count) * 100) : 0;
+    return { code: c, title: st.title, avgPct, passRate };
+  });
+
+  computedTpMatrix = { tpCodes, studentRows };
+
+  // Kartu Sorotan Otomatis
+  const hlBox = document.getElementById('anTpHighlights');
+  if (tpStats.length) {
+    const maxP = Math.max(...tpStats.map(t => t.avgPct));
+    const minP = Math.min(...tpStats.map(t => t.avgPct));
+    const best = tpStats.filter(t => t.avgPct === maxP);
+    const low  = tpStats.filter(t => t.avgPct === minP);
+    const below = tpStats.filter(t => t.avgPct < activeAnalyticsKktp);
+
+    hlBox.innerHTML = `
+      <div class="hl-card hl-best">
+        <small>🏆 Capaian TP Terbaik Kelas</small>
+        <strong>${best.map(b => escHtml(b.code)).join(', ')} (${maxP}%)</strong>
+        <p>${best.map(b => escHtml(b.title)).join(' • ')}</p>
+      </div>
+      <div class="hl-card hl-warn">
+        <small>🎯 Prioritas Penguatan / Remedial TP</small>
+        <strong>${below.length ? low.map(l => escHtml(l.code)).join(', ') + ' (' + minP + '%)' : 'Seluruh TP Tuntas! 🎉'}</strong>
+        <p>${below.length ? 'Di bawah KKTP ' + activeAnalyticsKktp + '%: ' + below.map(b => escHtml(b.code) + ' (' + b.avgPct + '%)').join(', ') : 'Fokus pengayaan pada ' + low.map(l => escHtml(l.code)).join(', ')}</p>
+      </div>
+    `;
+  } else {
+    hlBox.innerHTML = '';
+  }
+
+  // Grafik Batang TP
+  document.getElementById('anTpChartList').innerHTML = tpStats.map((st, idx) => {
+    const pass = st.avgPct >= activeAnalyticsKktp;
+    return `
+      <div class="tp-bar-row">
+        <div class="tp-bar-name">${escHtml(st.code)}<small>${escHtml(st.title)} • ${st.passRate}% siswa tuntas</small></div>
+        <div class="tp-track">
+          <div class="kktp-marker" style="left:${activeAnalyticsKktp}%">${idx === 0 ? `<span class="kktp-tag">KKTP ${activeAnalyticsKktp}%</span>` : ''}</div>
+          <div class="tp-fill ${pass ? 'pass' : 'fail'}" style="width:${Math.max(st.avgPct, 4)}%">${st.avgPct >= 18 ? st.avgPct + '%' : ''}</div>
+        </div>
+        <div class="tp-pct" style="color:${pass ? 'var(--emerald)' : 'var(--rose)'}">${st.avgPct}%</div>
+      </div>
+    `;
+  }).join('') || '<p style="color:var(--muted)">Data Rekap TP belum tersedia.</p>';
+
+  // Matriks TP per Siswa
+  document.getElementById('anTpMatrixHead').innerHTML = `<tr>
+    <th>No</th><th>Nama Siswa</th><th>Kelas</th>
+    ${tpCodes.map(c => `<th>${escHtml(c)}</th>`).join('')}
+    <th>Nilai Akhir</th><th>Status KKTP</th>
+  </tr>`;
+
+  document.getElementById('anTpMatrixBody').innerHTML = studentRows.map((sr, i) => {
+    const r = sr.row;
+    const isPass = Number(r.finalScore || 0) >= activeAnalyticsKktp;
+    const tpCols = tpCodes.map(c => {
+      const v = sr.tpObj[c];
+      if (!v) return '<td>-</td>';
+      const ok = v.pct >= activeAnalyticsKktp;
+      return `<td><span class="badge-st ${ok ? 'st-done' : 'st-bad'}">${v.pct}%</span></td>`;
+    }).join('');
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td><b>${escHtml(r.nama)}</b><br><small style="color:var(--muted)">${escHtml(r.nisn)}</small></td>
+        <td>${escHtml(r.rombel || r.kelas)}</td>
+        ${tpCols}
+        <td><b>${r.finalScore}</b></td>
+        <td><span class="badge-st ${isPass ? 'st-done' : 'st-bad'}">${isPass ? '✅ Tuntas' : '⚠️ Perlu Bimbingan'}</span></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function computeAndRenderItemAnalysis(rows) {
+  const itemMap = {};
+  rows.forEach(r => {
+    let items = [];
+    try { items = JSON.parse(r.itemScoresJson || '[]'); } catch (e) {}
+    items.forEach(it => {
+      const q = Number(it.qnum);
+      if (!itemMap[q]) {
+        itemMap[q] = {
+          qnum: q, tp: it.tp || '-', type: it.type || 'PG', key: it.key || '-',
+          sumRatio: 0, n: 0, benar: 0, parsial: 0, salah: 0, belum: 0, dist: {}
+        };
+      }
+      const rec = itemMap[q];
+      const ratio = (it.ratio !== undefined && it.ratio !== null)
+        ? Number(it.ratio)
+        : (Number(it.max) > 0 ? Number(it.earned || 0) / Number(it.max) : 0);
+
+      rec.sumRatio += ratio;
+      rec.n += 1;
+
+      if (it.status === 'Benar') rec.benar++;
+      else if (it.status === 'Parsial') rec.parsial++;
+      else if (it.status === 'Belum Dinilai') rec.belum++;
+      else rec.salah++;
+
+      if (rec.type === 'PG' || rec.type === 'BS') {
+        const a = String(it.answer || 'Kosong').trim() || 'Kosong';
+        rec.dist[a] = (rec.dist[a] || 0) + 1;
+      } else if (rec.type === 'PGK') {
+        const parts = String(it.answer || '').split(',').map(x => x.trim()).filter(Boolean);
+        if (!parts.length) rec.dist['Kosong'] = (rec.dist['Kosong'] || 0) + 1;
+        else parts.forEach(p => { rec.dist[p] = (rec.dist[p] || 0) + 1; });
+      }
+    });
+  });
+
+  computedItemAnalysis = Object.values(itemMap).sort((a, b) => a.qnum - b.qnum).map(it => {
+    const P = it.n ? Number((it.sumRatio / it.n).toFixed(2)) : 0;
+    const pct = Math.round(P * 100);
+    const cat = P > 0.7 ? 'Mudah' : (P >= 0.3 ? 'Sedang' : 'Sukar');
+    return { ...it, P, pct, cat };
+  });
+
+  // 5 Soal Tersulit
+  const hardest = [...computedItemAnalysis].sort((a, b) => a.P - b.P).slice(0, 5);
+  document.getElementById('anHardestItems').innerHTML = hardest.map(h => `
+    <div class="hard-card">
+      <strong>Soal No. ${h.qnum} (${h.pct}%)</strong>
+      <small>${escHtml(h.tp)} • ${escHtml(h.type)} • P = ${h.P.toFixed(2)} (${h.cat})</small>
+      <div style="font-size:11.5px;margin-top:6px;color:var(--slate);">Benar: ${h.benar} • Parsial: ${h.parsial} • Salah: ${h.salah}</div>
+    </div>
+  `).join('') || '<p style="color:var(--muted)">Belum ada rincian butir soal.</p>';
+
+  // Tabel Analisis Butir
+  document.getElementById('anItemTableBody').innerHTML = computedItemAnalysis.map(it => {
+    const catBadge = it.cat === 'Mudah' ? 'st-done' : (it.cat === 'Sedang' ? 'st-wait' : 'st-bad');
+    const keyParts = String(it.key || '').split(',').map(s => s.trim());
+    let distHtml = '<span style="color:var(--muted);font-size:12px;">Rubrik / Pasangan</span>';
+    if (it.type === 'PG' || it.type === 'BS' || it.type === 'PGK') {
+      distHtml = Object.keys(it.dist).sort().map(opt => {
+        const isKey = keyParts.includes(opt);
+        return `<span class="dist-chip ${isKey ? 'is-key' : ''}">${escHtml(opt)}: ${it.dist[opt]}</span>`;
+      }).join('');
+    }
+    return `
+      <tr>
+        <td><b>${it.qnum}</b></td>
+        <td><span class="badge-st st-info">${escHtml(it.tp)}</span></td>
+        <td>${escHtml(it.type)}</td>
+        <td><b>${escHtml(it.key)}</b></td>
+        <td>✅ ${it.benar} &nbsp;|&nbsp; 🟡 ${it.parsial} &nbsp;|&nbsp; ❌ ${it.salah}${it.belum ? ` &nbsp;|&nbsp; ⏳ ${it.belum}` : ''}</td>
+        <td><b>${it.P.toFixed(2)}</b> <span class="badge-st ${catBadge}">${it.cat}</span></td>
+        <td><b>${it.pct}%</b></td>
+        <td>${distHtml}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function downloadCSV(filename, rows) {
+  const csv = rows.map(r => r.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+function exportTpMatrixCSV() {
+  if (!computedTpMatrix || !computedTpMatrix.studentRows.length) return showToast('Belum ada data untuk diekspor.', 'err');
+  const { tpCodes, studentRows } = computedTpMatrix;
+  const header = ['No', 'NISN', 'Nama Siswa', 'Kelas', ...tpCodes.map(c => c + ' (%)'), 'Nilai Akhir', 'Status KKTP'];
+  const body = studentRows.map((sr, i) => [
+    i + 1, sr.row.nisn, sr.row.nama, sr.row.rombel || sr.row.kelas,
+    ...tpCodes.map(c => sr.tpObj[c] ? sr.tpObj[c].pct : ''),
+    sr.row.finalScore, sr.row.statusKktp
+  ]);
+  downloadCSV(`Matriks_TP_${document.getElementById('anPackageSel').value}.csv`, [header, ...body]);
+}
+
+function exportItemAnalysisCSV() {
+  if (!computedItemAnalysis.length) return showToast('Belum ada data analisis butir.', 'err');
+  const header = ['No Soal', 'TP', 'Tipe', 'Kunci', 'Benar', 'Parsial', 'Salah', 'Kesukaran (P)', 'Kategori', 'Penguasaan (%)'];
+  const body = computedItemAnalysis.map(it => [
+    it.qnum, it.tp, it.type, it.key, it.benar, it.parsial, it.salah, it.P.toFixed(2), it.cat, it.pct
+  ]);
+  downloadCSV(`Analisis_Butir_${document.getElementById('anPackageSel').value}.csv`, [header, ...body]);
+}
+
+function printReport(title) {
+  const pkg = document.getElementById('anPackageSel')?.selectedOptions?.[0]?.text || '';
+  const cls = document.getElementById('anClassSel')?.value || '';
+  document.getElementById('printMetaInfo').textContent = `${title} • ${pkg} • Filter: ${cls} • Dicetak oleh ${currentUser.nama} pada ${formatDateTime(new Date())}`;
+  window.print();
+}
+
+// =========================================================================
+// 8. RAPOR & GRAFIK TP PRIBADI SISWA
+// =========================================================================
+async function loadStudentHistory(force = false) {
+  const box = document.getElementById('studentReportContainer');
+  if (!force && studentHistoryCache) return renderStudentHistory(studentHistoryCache);
+
+  box.innerHTML = `<div class="panel-box"><div class="panel-body" style="text-align:center;font-weight:800;color:var(--primary);">⏳ Memuat rapor dan grafik TP pribadimu...</div></div>`;
+  try {
+    const res = await fetch(`${ENDPOINT}?action=getStudentSumatifHistory&nisn=${encodeURIComponent(currentUser.username)}`);
+    const json = await res.json();
+    if (json.status === 'success') {
+      studentHistoryCache = json.data || [];
+      renderStudentHistory(studentHistoryCache);
+    } else {
+      box.innerHTML = `<div class="empty-state"><div class="em-icon">⚠️</div><h4>Gagal Memuat Rapor</h4><p>${escHtml(json.message)}</p></div>`;
+    }
+  } catch (e) {
+    box.innerHTML = `<div class="empty-state"><div class="em-icon">⚠️</div><h4>Koneksi Terputus</h4><p>Silakan tekan tombol Perbarui Rapor.</p></div>`;
+  }
+}
+
+function renderStudentHistory(list) {
+  const box = document.getElementById('studentReportContainer');
+  if (!list.length) {
+    box.innerHTML = `<div class="empty-state"><div class="em-icon">🌟</div><h4>Belum Ada Riwayat Asesmen Sumatif</h4><p>Hasil nilai dan grafik capaian TP-mu akan muncul otomatis di sini setelah kamu mengerjakan Asesmen Sumatif.</p></div>`;
+    return;
+  }
+
+  box.innerHTML = list.map(item => {
+    const kat = katalogSumatif.find(k => k.sumatifId === item.sumatifId);
+    const kktp = kat ? Number(kat.kktp || 75) : 75;
+    const tpObj = parseTpSummarySafe(item.tpSummaryJson);
+    const tpArr = Object.values(tpObj);
+    const isPass = item.statusKktp === 'Tuntas';
+    const detailUrl = kat && kat.url ? `${kat.url}?view=siswa&submissionId=${encodeURIComponent(item.submissionId)}` : '';
+
+    let tpBarsHtml = '';
+    if (tpArr.length) {
+      tpBarsHtml = `<div class="tp-chart-list">` + tpArr.map((st, idx) => {
+        const ok = st.pct >= kktp;
+        return `
+          <div class="tp-bar-row">
+            <div class="tp-bar-name">${escHtml(st.code)}<small>${escHtml(st.title)}</small></div>
+            <div class="tp-track">
+              <div class="kktp-marker" style="left:${kktp}%">${idx === 0 ? `<span class="kktp-tag">KKTP ${kktp}%</span>` : ''}</div>
+              <div class="tp-fill ${ok ? 'pass' : 'fail'}" style="width:${Math.max(st.pct, 4)}%">${st.pct >= 18 ? st.earned + '/' + st.max : ''}</div>
+            </div>
+            <div class="tp-pct" style="color:${ok ? 'var(--emerald)' : 'var(--rose)'}">${st.pct}%</div>
+          </div>
+        `;
+      }).join('') + `</div>`;
+    }
+
+    return `
+      <div class="panel-box">
+        <div class="panel-head">
+          <div>
+            <h3>🎯 ${escHtml(item.examTitle)}</h3>
+            <small style="color:var(--muted);font-weight:700;">${escHtml(item.subject)} • ${formatDateTime(item.timestamp)} • ${escHtml(item.gradeStatus)}</small>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span class="badge-st ${isPass ? 'st-done' : 'st-bad'}" style="font-size:13px;padding:6px 14px;">
+              Nilai: ${escHtml(item.finalScoreDisplay ?? item.finalScore)} • ${escHtml(item.statusKktp)}
+            </span>
+            ${detailUrl ? `<a href="${escHtml(detailUrl)}" target="_blank" class="btn btn-primary btn-sm">🔍 Pembahasan &amp; Rincian</a>` : ''}
+          </div>
+        </div>
+        <div class="panel-body">
+          ${tpBarsHtml || '<p style="color:var(--muted)">Grafik per TP belum tersedia.</p>'}
+          ${item.feedback ? `<div style="margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--primary-soft);font-size:13.5px;"><b>💬 Catatan Guru:</b> ${escHtml(item.feedback)}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// =========================================================================
+// 9. PENGATURAN KURIKULUM & MATA PELAJARAN (ADMIN ONLY — FULL CRUD)
+// =========================================================================
+function renderAdminSubjectsTable() {
+  const tbody = document.getElementById('adminSubjectsBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = allSubjectsAdmin.map(s => `
+    <tr>
+      <td><b>${s.order}</b></td>
+      <td>
+        <span class="tag-pill" style="background:${s.bg};color:${s.color};font-size:13px;">
+          ${escHtml(s.icon)} ${escHtml(s.name)}
+        </span>
+      </td>
+      <td><span class="badge-st ${s.pengampuType === 'Guru Mapel' ? 'st-wait' : 'st-info'}">${escHtml(s.pengampuType)}</span></td>
+      <td>${s.kelasList.map(k => `<span class="code-pill" style="margin:2px;display:inline-block;">${escHtml(k)}</span>`).join('')}</td>
+      <td><span class="badge-st ${s.status === 'Aktif' ? 'st-done' : 'st-bad'}">${escHtml(s.status)}</span></td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-soft btn-sm" onclick="openSubjectModal('${escHtml(s.mapelId)}')">✏️ Edit</button>
+          <button class="btn btn-rose btn-sm" onclick="confirmDeleteSubject('${escHtml(s.mapelId)}','${escHtml(s.name)}')">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openSubjectModal(mapelId = '') {
+  const checks = [...document.querySelectorAll('#subClassChecks input[type="checkbox"]')];
+  if (mapelId) {
+    const s = allSubjectsAdmin.find(x => x.mapelId === mapelId);
+    if (!s) return;
+    document.getElementById('subjectModalTitle').textContent = '✏️ Edit Mata Pelajaran';
+    document.getElementById('subEditId').value   = s.mapelId;
+    document.getElementById('subName').value     = s.name;
+    document.getElementById('subIcon').value     = s.icon;
+    document.getElementById('subPengampu').value = s.pengampuType;
+    document.getElementById('subOrder').value    = s.order;
+    document.getElementById('subStatus').value   = s.status;
+    document.getElementById('subColor').value    = s.color.startsWith('#') ? s.color : '#0284c7';
+    document.getElementById('subBg').value       = s.bg.startsWith('#') ? s.bg : '#e0f2fe';
+    checks.forEach(cb => cb.checked = s.kelasList.includes(cb.value));
+  } else {
+    document.getElementById('subjectModalTitle').textContent = '➕ Tambah Mata Pelajaran Baru';
+    document.getElementById('subEditId').value   = '';
+    document.getElementById('subName').value     = '';
+    document.getElementById('subIcon').value     = '📘';
+    document.getElementById('subPengampu').value = 'Guru Kelas';
+    document.getElementById('subOrder').value    = allSubjectsAdmin.length + 1;
+    document.getElementById('subStatus').value   = 'Aktif';
+    document.getElementById('subColor').value    = '#0284c7';
+    document.getElementById('subBg').value       = '#e0f2fe';
+    checks.forEach(cb => cb.checked = true);
+  }
+  openModal('subjectModal');
+}
+
+async function submitSubjectForm(e) {
+  e.preventDefault();
+  const kelasList = [...document.querySelectorAll('#subClassChecks input[type="checkbox"]:checked')].map(cb => cb.value);
+  if (!kelasList.length) return showToast('⚠️ Pilih minimal satu jenjang kelas aktif.', 'err');
+
+  const btn = document.getElementById('btnSaveSubject');
+  btn.disabled = true; btn.textContent = '⏳ Menyimpan...';
+
+  const payload = {
+    action: 'saveSubject',
+    token: authToken,
+    mapelId: document.getElementById('subEditId').value.trim(),
+    name: document.getElementById('subName').value.trim(),
+    icon: document.getElementById('subIcon').value.trim(),
+    pengampuType: document.getElementById('subPengampu').value,
+    order: Number(document.getElementById('subOrder').value || 1),
+    status: document.getElementById('subStatus').value,
+    color: document.getElementById('subColor').value,
+    bg: document.getElementById('subBg').value,
+    kelasList
+  };
+
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (json.status === 'success') {
+      showToast('✅ ' + json.message);
+      closeModal('subjectModal');
+      await refreshPortalData();
+    } else {
+      showToast('❌ ' + json.message, 'err');
+    }
+  } catch (err) {
+    showToast('⚠️ Koneksi gagal.', 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Simpan Pengaturan';
+  }
+}
+
+function confirmDeleteSubject(mapelId, name) {
+  askConfirm(
+    'Nonaktifkan Mata Pelajaran?',
+    `Mata pelajaran "${name}" akan dinonaktifkan dari katalog dan menu guru/siswa. Anda dapat mengaktifkannya kembali kapan saja lewat tombol Edit.`,
+    async () => {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'deleteSubject', token: authToken, mapelId, hardDelete: false })
+      });
+      const json = await res.json();
+      if (json.status === 'success') {
+        showToast('🗑️ ' + json.message);
+        await refreshPortalData();
+      } else {
+        showToast('❌ ' + json.message, 'err');
+      }
+    }
+  );
 }
 </script>
 </body>
